@@ -1,0 +1,138 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+// Khai báo pubspec.yaml phía dưới dependencies khia báo " flutter_spinkit: ^5.1.0 "
+
+// loading 
+
+class Loading extends StatefulWidget {
+  const Loading( {Key ? key}) : super(key: key);
+
+  @override
+  _Loading createState() => _Loading();
+}
+
+class _Loading extends State<Loading> {
+  int _counter = 5;
+  Timer ? _timer;
+
+  void _startTimer() {
+    _counter =5;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) { 
+      setState(() {
+        if(_counter>0){
+          _counter--;
+        }
+        else{            
+           
+          _timer!.cancel();
+        }
+      });
+    });
+        
+  }
+
+  @override 
+  void initState(){
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+      return MaterialApp(
+      title: 'loading',
+      home: Scaffold(
+        backgroundColor: Colors.cyanAccent[700],
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.all(12),
+                child: Image.asset('images/LogIn.PNG'),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: Text(
+                  'Signln',
+                  style: TextStyle(
+                    fontSize: 60,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white
+                  ),
+                ),
+              ),
+              Text('Speak, friend, and enter'),
+              SpinKitFadingCircle(
+                    color: Colors.white,
+                    size: 50.0,
+                  ),
+                              ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  }
+
+// FailedLogIn
+class failed extends StatelessWidget{
+  final bool loading = false;
+  const failed ({Key? key}) : super (key: key);
+ @override
+   Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      home:  Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('images/LogIn.PNG'),
+            Container(
+              margin: EdgeInsets.only(top: 30, bottom: 10),
+              child: Text(
+                "UPS... couldn't Sign In",
+                style: TextStyle(
+                  fontSize:20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black
+                ),
+              ),
+            ),
+            Container(
+               margin: EdgeInsets.only( bottom: 150),
+               child:   Text(
+              "Your username and password don't match place, \ntry agian ",
+                 style: TextStyle(
+                  color: Colors.grey
+                ), ), 
+            ),
+            Container(
+              margin: EdgeInsets.all(30),
+              alignment: Alignment.bottomCenter,
+              child:  SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: RaisedButton(
+                onPressed: () {},
+                color: Colors.black,
+                child: Text(
+                  'TRY AGAIN',
+                  style: TextStyle(color: Colors.white, fontSize: 16,)
+                ),
+                ),
+            ), 
+            ),
+           
+          ],
+        ),
+      ),
+    )
+    );
+  }
+  
+}

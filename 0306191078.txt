@@ -1,0 +1,87 @@
+
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        title: 'Flutter Làm Nhóm',
+        home: const SignPage(),
+        theme: new ThemeData(scaffoldBackgroundColor: const Color(0xFF00B8D4)));
+  }
+}
+
+class SignPage extends StatelessWidget {
+  const SignPage({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Center(
+            child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Hero(
+          tag: 'hero',
+          child: CircleAvatar(
+            backgroundColor: Colors.transparent,
+            radius: 48.0,
+            child: Image.asset('images/mail1.jpg'),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: const Text(
+            'Signln',
+            style: TextStyle(color: Colors.white, fontSize: 50),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: const Text(
+            'Speak, friend anh enter',
+            style: TextStyle(color: Colors.black, fontSize: 15),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(15),
+          child: TextField(
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(),
+                hintText: "Email",
+                suffixIcon: Icon(Icons.crop_square)),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(15),
+          child: TextField(
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(),
+              hintText: "Password",
+            ),
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.all(15),
+            child: RaisedButton(
+              child: const Text(
+                  '                                               SIGN IN                                               '),
+              textColor: Colors.white,
+              elevation: 10.0,
+              color: Colors.black,
+              onPressed: () {},
+            )),
+      ],
+    )));
+  }
+}

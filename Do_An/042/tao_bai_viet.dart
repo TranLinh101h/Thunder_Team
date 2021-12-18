@@ -58,7 +58,9 @@ class TaoBaiVietState extends State<TaoBaiViet>{
           ],
         ),
       ),
-      body: Column(
+      body: ListView(
+        children: [
+          Column(
         children: [
         const Padding(
             padding: EdgeInsets.all(8.0),
@@ -113,9 +115,7 @@ class TaoBaiVietState extends State<TaoBaiViet>{
                         fontWeight: FontWeight.bold
                       ),
                     )
-                  ],
-                ),
-              ),
+                ], ), ),
             ), )
           ), //=2= Phần shared
           const Padding(padding: EdgeInsets.only(bottom: 330.0)),
@@ -129,8 +129,8 @@ class TaoBaiVietState extends State<TaoBaiViet>{
              ],
            ),
           ),
-       ],
-      ),
+       ], ),
+     ], )
     );
   }
 

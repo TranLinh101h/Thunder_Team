@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // Thư viện hỗ trọ up ảnh vô yam copy ra
 import 'dart:io'; 
 
-class DeXuatDD extends StatefulWidget{
-  const DeXuatDD({Key? key}) : super(key: key);
+class DeXuatDiaDanh extends StatefulWidget{
+  const DeXuatDiaDanh({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return RDeXuatDDState();
+    return DeXuatDiaDanhState();
   }
 
 } 
 
-class DeXuatDDState extends State<DeXuatDD> {
+class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
    File? _imageFile;
   final _picker = ImagePicker();
 
@@ -57,6 +57,7 @@ class DeXuatDDState extends State<DeXuatDD> {
       body: ListView(
         children: [
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
         children: [
          Padding(
            padding:const EdgeInsets.all(12.0),
@@ -105,17 +106,18 @@ class DeXuatDDState extends State<DeXuatDD> {
              ),
            ),
           ),
-       //=4=
-        Padding(
-           padding:const EdgeInsets.all(12.0),
-           child: TextButton(
-                   onPressed: (){},
-                   child: Row(
-                     children: const [
-                       Icon(Icons.pin_drop_outlined),
-                       Text(' Location')
-         ]))),
-       // =5=
+     const Padding(
+        padding: EdgeInsets.only(left: 20.0, top: 12.0 ),
+        child: Text(
+              'Hình ảnh',
+              style: TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+                fontSize: 17
+              ),
+          )
+        ),
+       // =4=
        Padding(
            padding:const EdgeInsets.all(12.0),
            child:  ButtonBar(
@@ -132,14 +134,24 @@ class DeXuatDDState extends State<DeXuatDD> {
             ),
           ],
        )),
+       // Check Value
         if (this._imageFile == null)
           const Placeholder()
         else
           Image.file(this._imageFile!),
-          
-       ],
-      ),
-        ],
+        //=5=
+        Padding(
+           padding:const EdgeInsets.all(12.0),
+           child: TextButton(
+                   onPressed: (){},
+                   child: Row(
+                     children: const [
+                       Icon(Icons.pin_drop_outlined),
+                       Text(' Location')
+         ]))),
+         ],
+        ),
+      ],
       )
     );
   }

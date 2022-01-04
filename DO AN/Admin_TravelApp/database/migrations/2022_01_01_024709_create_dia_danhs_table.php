@@ -21,10 +21,10 @@ class CreateDiaDanhsTable extends Migration
             $table->unsignedBigInteger('phan_vung_id')->nullable();
             $table->string('ten_Goi_Khac')->nullable();
             $table->longtext('mo_Ta');
-            $table->double('kinh_Do')->nullable();
-            $table->double('vi_Do')->nullable();
-            $table->boolean('hot');
-            $table->integer('status');
+            $table->double('kinh_Do')->default(1);
+            $table->double('vi_Do')->default(1);
+            $table->boolean('hot')->default(0);
+            $table->integer('status')->default(1);
             $table->timestamps();
              $table->softDeletes();
         });

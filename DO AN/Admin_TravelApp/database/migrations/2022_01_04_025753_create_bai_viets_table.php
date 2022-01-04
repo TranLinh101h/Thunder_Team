@@ -20,14 +20,14 @@ class CreateBaiVietsTable extends Migration
              $table->unsignedBigInteger('user_id');
              $table->unsignedBigInteger('dia_danh_id');
              $table->text('noi_Dung');
-             $table->boolean('checked');
+             $table->boolean('checked')->default(0);
              $table->integer('status');
         });
 
         Schema::create('hinh_bai_viets', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('bai_viet_id');
-            $table->string('img')>nullable();
+            $table->string('img')->nullable();
         });
     }
 

@@ -20,10 +20,10 @@ class CreateUsersTable extends Migration
             $table->string('email');
              $table->string('img')->nullable();
             $table->string('password');
-            $table->string('sdt')>nullable();
-            $table->boolean('status_email');
-            $table->boolean('status_sdt');
-            $table->rememberToken()>nullable();
+            $table->string('sdt')->nullable();
+            $table->boolean('status_email')->default(1);
+            $table->boolean('status_sdt')->default(1);
+            $table->rememberToken()->nullable();
         });
     }
 

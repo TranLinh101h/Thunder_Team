@@ -1,0 +1,16 @@
+ALTER TABLE danh_gias ADD FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE danh_gias ADD FOREIGN KEY(dia_danh_id) REFERENCES dia_danhs(id);
+ALTER TABLE views ADD FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE views ADD FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE likes ADD FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE likes ADD FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE dislikes ADD FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE dislikes ADD FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE diem_luu_tru ADD FOREIGN KEY(dia_danh_id) REFERENCES dia_danhs(id);
+ALTER TABLE diem_luu_tru ADD FOREIGN KEY(loai_luu_tru_id) REFERENCES loai_luu_trus(id);
+ALTER TABLE bai_viets ADD FOREIGN KEY(dia_danh_id) REFERENCES dia_danhs(id);
+ALTER TABLE bai_viets ADD FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE dia_danhs ADD FOREIGN KEY(phan_vung_id) REFERENCES phan_vungs(id);
+ALTER TABLE dia_danhs ADD FOREIGN KEY(mien_id) REFERENCES miens(id);
+ALTER TABLE dia_danhs ADD FOREIGN KEY(loai_dia_danh_id) REFERENCES loai_dia_danhs(id);
+ALTER TABLE de_xuats ADD FOREIGN KEY(user_id) REFERENCES users(id);

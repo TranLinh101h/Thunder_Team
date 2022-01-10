@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Like;
+use App\Models\Dislike;
 use App\Http\Requests\StoreLikeRequest;
 use App\Http\Requests\UpdateLikeRequest;
+use App\Models\User;
+use App\Models\BaiViet;
 
 class LikeController extends Controller
 {
@@ -13,11 +16,75 @@ class LikeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function likeOrUnlike($id)
     {
-        //
+        $post= BaiViet::find($id);
+
+        $like= $post->likes()->where('user_id', auth()->user()->id)->first();
+        $dislike= $post->dislikes()->where('user_id', auth()->user()->id)->first();
+
+        //if not liked then liked
+        if(!$like)
+        {
+            Like::create([
+                'bai_viet_id' =>$id,
+                'user_id' => auth()->user()->id
+            ]);
+
+            if($dislike){
+                $dislike->delete();
+            }
+
+            return response([
+                'message'=> 'Liked'
+            ], 200);
+
+            
+        }
+        
+        //else dislike
+        $like->delete();
+        return response([
+                'message'=> 'UnLiked'
+            ], 200);
     }
 
+     public function checkedlike($id)
+    {
+        $post= BaiViet::find($id);
+
+        $like= $post->likes()->where('user_id', auth()->user()->id)->first();
+
+        //if not liked then liked
+        if(!$like)
+        {
+            return response([
+                'message'=> 'falselike'
+            ], 200);
+        }
+
+            return response([
+                'message'=> 'truelike'
+            ], 201);
+    }
+
+    public function checkeddislike($id)
+    {
+        $post= BaiViet::find($id);
+
+        $dislike= $post->dislikes()->where('user_id', auth()->user()->id)->first();
+
+        if($dislike)
+        {
+            return response([
+                'message'=> 'truedislike'
+            ], 202);
+        }
+        //else dislike
+        return response([
+                'message'=> 'falsedislike'
+            ], 203);
+    }
     /**
      * Show the form for creating a new resource.
      *

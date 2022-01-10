@@ -22,9 +22,13 @@ class BaiVietController extends Controller
     {
         return response([
             'baiviets'=>BaiViet::where('status', '=', '1')->orderby('created_at', 'desc')->with('user:name,id,img')
-            ->withCount('views', 'likes', 'dislikes')->get()],200);
+            ->withCount('views', 'likes', 'dislikes')->with('likes', function($like){
+                return $like->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
+            })->with('dislikes', function($dislike){
+                return $dislike->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
+            })->get()],200);
     }
-
+    
     /**
      * Show the form for creating a new resource.
      *

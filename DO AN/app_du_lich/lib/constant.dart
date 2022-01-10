@@ -8,6 +8,7 @@ const baivietURL = baseURL + '/baiviet';
 const diadanhURL = baseURL + '/diadanh';
 const hinhdiadiemURL = baseURL + '/hinhdiadiem';
 const diemluutruURL = baseURL + '/diemluutru';
+const actionBaiVietURL = baseURL + '/posts';
 
 const serverError = 'SERVER ERROR';
 const unauthorized = 'Unauthorized';

@@ -2,45 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\View;
-use App\Http\Requests\StoreViewRequest;
-use App\Http\Requests\UpdateViewRequest;
+use App\Models\Like;
+use App\Models\Dislike;
+use App\Http\Requests\StoreLikeRequest;
+use App\Http\Requests\UpdateLikeRequest;
 use App\Models\User;
 use App\Models\BaiViet;
 
-class ViewController extends Controller
+class DislikeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    //Tran Linh
-     public function view($id)
+     public function dislikeOrUnlike($id)
     {
         $post= BaiViet::find($id);
 
-        $view= $post->views()->where('user_id', auth()->user()->id)->first();
+        $dislike= $post->dislikes()->where('user_id', auth()->user()->id)->first();
+        $like= $post->likes()->where('user_id', auth()->user()->id)->first();
 
-        //if not viewd then liked
-        if(!$view)
+        //if not disliked then liked
+        if(!$dislike)
         {
-            view::create([
+            Dislike::create([
                 'bai_viet_id' =>$id,
                 'user_id' => auth()->user()->id
             ]);
 
+            if($like){
+                $like->delete();
+            }
+
             return response([
-                'message'=> 'view'
+                'message'=> 'Disliked'
             ], 200);
         }
         
-        //else unview
+        //else undislike
+        $dislike->delete();
         return response([
-                'message'=> 'had view'
+                'message'=> 'UndisLiked'
             ], 200);
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -55,10 +60,10 @@ class ViewController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreViewRequest  $request
+     * @param  \App\Http\Requests\StoreLikeRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreViewRequest $request)
+    public function store(StoreLikeRequest $request)
     {
         //
     }
@@ -66,10 +71,10 @@ class ViewController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\View  $view
+     * @param  \App\Models\Like  $like
      * @return \Illuminate\Http\Response
      */
-    public function show(View $view)
+    public function show(Like $like)
     {
         //
     }
@@ -77,10 +82,10 @@ class ViewController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\View  $view
+     * @param  \App\Models\Like  $like
      * @return \Illuminate\Http\Response
      */
-    public function edit(View $view)
+    public function edit(Like $like)
     {
         //
     }
@@ -88,11 +93,11 @@ class ViewController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateViewRequest  $request
-     * @param  \App\Models\View  $view
+     * @param  \App\Http\Requests\UpdateLikeRequest  $request
+     * @param  \App\Models\Like  $like
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateViewRequest $request, View $view)
+    public function update(UpdateLikeRequest $request, Like $like)
     {
         //
     }
@@ -100,10 +105,10 @@ class ViewController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\View  $view
+     * @param  \App\Models\Like  $like
      * @return \Illuminate\Http\Response
      */
-    public function destroy(View $view)
+    public function destroy(Like $like)
     {
         //
     }

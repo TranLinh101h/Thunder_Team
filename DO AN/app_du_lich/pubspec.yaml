@@ -34,6 +34,9 @@ dependencies:
   image_picker: ^0.8.4+4
   http: ^0.13.4
   shared_preferences: ^2.0.11
+  flutter_lints: 1.0.4
+  circular_menu: ^1.2.3 #animation 
+  geolocator: ^8.0.1 #api get vi tri hien tai
 
 
   # The following adds the Cupertino Icons font to your application.

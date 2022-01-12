@@ -13,7 +13,6 @@ use App\Http\Controllers\AdminController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', [App\Http\Controllers\AdminController::class,'thongke']);
 Route::get('/admin/thongke', [App\Http\Controllers\AdminController::class,'thongke']);
 Route::get('/admin/dsdiadanh', [App\Http\Controllers\AdminController::class,'dsdiadanh']);

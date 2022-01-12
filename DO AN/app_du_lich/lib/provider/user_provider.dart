@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io'; // // Cho phép sử dụng các phương thức hỗ trợ liên quan đến tệp
 
 import 'package:app_du_lich/constant.dart';
 import 'package:app_du_lich/objects/api_response.dart';
@@ -115,4 +116,76 @@ Future<int> getUserId() async {
 Future<bool> logout() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   return pref.remove('token');
+}
+
+// Man create 07/01/2022 | Mục đích encoded image sang mã base64 để lưu trữ
+String? getStringImage(File? file) {
+  if (file == null) return null;
+  return base64Encode(file.readAsBytesSync());
+}
+
+// Man create 10/01/2022 | Mục đích cập nhật thông tin user
+Future<ApiResponse> updateUser(String name, String gioi_Tinh, String email,
+    String sdt, String? img) async {
+  ApiResponse apiResponse = ApiResponse();
+  try {
+    String token = await getToken();
+    final response = await http.put(Uri.parse(userURL),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: img == null
+            ? {'name': name, 'gioi_Tinh': gioi_Tinh, 'email': email, 'sdt': sdt}
+            : {
+                'name': name,
+                'gioi_Tinh': gioi_Tinh,
+                'email': email,
+                'sdt': sdt,
+                'img': img
+              });
+
+    switch (response.statusCode) {
+      case 200:
+        apiResponse.data = jsonDecode(response.body)['message'];
+        break;
+      case 401:
+        apiResponse.error = unauthorized;
+        break;
+      default:
+        apiResponse.error = somethingWentWrong;
+        break;
+    }
+  } catch (e) {
+    apiResponse.error = serverError;
+  }
+  return apiResponse;
+}
+
+// Man create 10/01/2022 | Mục đích cập nhật password user
+Future<ApiResponse> updatePassUser(String password) async {
+  ApiResponse apiResponse = ApiResponse();
+  try {
+    String token = await getToken();
+    final response = await http.put(Uri.parse(updatePassURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    }, body: {
+      'password': password,
+    });
+    switch (response.statusCode) {
+      case 200:
+        apiResponse.data = jsonDecode(response.body)['message'];
+        break;
+      case 401:
+        apiResponse.error = unauthorized;
+        break;
+      default:
+        apiResponse.error = somethingWentWrong;
+        break;
+    }
+  } catch (e) {
+    apiResponse.error = serverError;
+  }
+  return apiResponse;
 }

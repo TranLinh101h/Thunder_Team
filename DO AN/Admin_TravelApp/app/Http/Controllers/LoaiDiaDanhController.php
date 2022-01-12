@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\LoaiDiaDanh;
+use Illuminate\Http\Request; // Man update 07/01/2022 :12:20:46 | su dung de nhan request tu client 
+use Illuminate\Support\Facades\Auth; // Man update 07/01/2022 :12:20:46 | | su dung nhung chuc nang lien quan acount
 use App\Http\Requests\StoreLoaiDiaDanhRequest;
 use App\Http\Requests\UpdateLoaiDiaDanhRequest;
 
@@ -82,5 +84,12 @@ class LoaiDiaDanhController extends Controller
     public function destroy(LoaiDiaDanh $loaiDiaDanh)
     {
         //
+    }
+
+    public function getloaidiadanh() // Man create-07/01/2022 : 20:10:57 | Dùng để lấy ds đổ trong phần Địa của tạo bài viết
+    {
+        return response([
+            'loaidiadanhs'=>LoaiDiaDanh::all('id','ten_Loai')
+        ],200);
     }
 }

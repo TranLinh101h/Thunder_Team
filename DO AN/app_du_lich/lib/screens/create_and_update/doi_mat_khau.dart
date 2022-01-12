@@ -1,4 +1,10 @@
-import 'package:flutter/material.dart'; // Đây là trang đổi mật khẩu
+import 'package:app_du_lich/objects/api_response.dart';
+import 'package:app_du_lich/objects/user_object.dart';
+import 'package:app_du_lich/provider/user_provider.dart';
+import 'package:app_du_lich/screens/dang_nhap_dang_ky/login.dart';
+import 'package:flutter/material.dart';
+
+import '../../constant.dart'; // Đây là trang đổi mật khẩu
 
 class DoiMatKhau extends StatefulWidget{
   const DoiMatKhau({Key ? key}): super(key: key);
@@ -10,20 +16,85 @@ class DoiMatKhau extends StatefulWidget{
 }
 
 class DoiMatKhauState extends State<DoiMatKhau>{
-  bool _showPassword = false; // Biến cờ dùng để kiểm tra có show pass hay không
-  
+
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmpassword = TextEditingController();
   final TextEditingController _mypassword = TextEditingController(); // Pass cu
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>(); // Khởi tạo KHÓA CHUNG để bắt được thay đổi trong Form
 
-   final String _condition = "if(_password.text != _confirmpassword.text){ return 'Mật khẩu không trùng khớp'; }";
+  final String _condition = "if(_password.text != _confirmpassword.text){ return 'Mật khẩu không trùng khớp'; }";
+  User? user;
+  bool _loading = true;
+  String _myPass = '';
+
+  void getInfo() async {
+    ApiResponse response = await getUser();
+    if(response.error == null )
+    {
+      setState(() {
+        user = response.data as User;
+        _loading = !_loading;
+        _myPass = user!.password ?? '';
+      });
+    } 
+    else if(response.error == unauthorized) {
+      logout().then((value) => {
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage() ) , (route) => false)
+      } );
+    }
+    else
+    {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('${response.error}')
+    ));
+    setState(() {
+      _loading = !_loading;
+    });
+    }
+  }
+
+   @override
+  void initState() {
+    getInfo();
+    super.initState();
+  }
+
+  void _updatePass() async {
+    ApiResponse response = await updatePassUser(_password.text);
+
+    setState(() {
+      _loading = !_loading;
+    });
+    if(response.error == null ){
+      setState(() {
+      _loading = !_loading;
+    });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('${response.data}'),
+      ));
+    }
+    else if (response.error == unauthorized ){
+    logout().then((value)=>{
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>LoginPage()), (route) => false)
+    }); 
+  }
+  else{
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('${response.error}')
+    ));
+    setState(() {
+      _loading = !_loading;
+    });
+  }
+  }
+
   // ignore: unused_element
   Widget _buildPasswordTextFormField(String hintxt, String labeltxt, TextEditingController ctrPass, String con) {
+    bool show = false;
     return TextFormField(
       controller: ctrPass,
-      obscureText: !_showPassword, // Khi thuộc tính là true thì pass sẽ show
+      obscureText: !show, // Khi thuộc tính là true thì pass sẽ show
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5.0)
@@ -35,21 +106,21 @@ class DoiMatKhauState extends State<DoiMatKhau>{
         prefixIcon: const Icon(Icons.security),
         suffixIcon: IconButton(
           onPressed: (){
-            setState(() => _showPassword = !_showPassword ); // Cập nhật lại trạng thái đăng nhập
+            setState(() => show = !show ); // Cập nhật lại trạng thái đăng nhập
           }, 
           icon: Icon(
             Icons.remove_red_eye,
-            color: _showPassword ? Colors.blue : Colors.grey, // Khi _showPassword là true màu là xanh và ngược lại
+            color: show ? Colors.blue : Colors.grey, // Khi _showPassword là true màu là xanh và ngược lại
           ), )
        ),
       validator: (value){ // Check dữ liệu người dùng nhập vào
         if(value!.isEmpty){ 
           return "Nhập đầy đủ thông tin bạn êy";
         }
-        if(value.length <8){
-          return "Mật khẩu tối thiếu 8 ký tự";
+        if(value.length <=6){
+          return "Mật khẩu tối thiếu 6 ký tự";
         }
-        con;
+        _updatePass();
         return null;
       },
 
@@ -119,6 +190,10 @@ class DoiMatKhauState extends State<DoiMatKhau>{
                                 // ignore: avoid_print
                                 print("Not Validated");
                            }
+                         
+                          
+                            _updatePass();
+                          
                         },
                         child:const Text(
                           'Hoàn thành',

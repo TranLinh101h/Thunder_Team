@@ -65,4 +65,38 @@ class AuthController extends Controller
             'user'=> auth()->user()
         ],200);
     } 
+
+     // update cho user
+    public function update(Request $request) 
+    {
+        // $attrs = $request->validate([
+        //     'name' => 'required|string'
+        // ]);
+        $img = $this->saveImage($request->img, 'profiles'); // method saveImage khai báo bên controller dùng để decoded cái base 64 về lại ảnh để lưu ảnh trên server
+
+        auth()->user()->update([
+            'name' =>$request->name,
+            'gioi_Tinh' =>$request->gioi_Tinh,
+            'email' =>$request->email,
+            'img' =>$img,
+            'sdt'=>$request->sdt
+        ]);
+
+        return response([
+            'message' => 'update user success',
+            'user' => auth()->user()
+        ], 200);
+    }
+
+    public function updatePass(Request $request) 
+    {
+        auth()->user()->update([
+            'password' => $request->password,
+        ]);
+
+        return response([
+            'message' => 'update pass user success',
+            'user' => auth()->user()
+        ], 200);
+    }
 }

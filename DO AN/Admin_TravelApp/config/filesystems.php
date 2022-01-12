@@ -41,6 +41,27 @@ return [
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
         ],
+        
+        'profiles' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/profiles'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+
+        'hinh_bai_viets' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/hinh_bai_viets'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+
+        'hinh_dia_diems' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/hinh_dia_diems/de_xuats'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
 
         's3' => [
             'driver' => 's3',

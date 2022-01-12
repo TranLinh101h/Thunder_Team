@@ -30,6 +30,13 @@ class DiaDanhController extends Controller
         return response([
             'hinhdiadanh' =>HinhDiaDiem::get()],200);
     }
+
+        public function getNameDiaDanh() // Man create-07/01/2022 : 20:10:57 | Dùng để lấy ds đổ trong phần Địa của tạo bài viết
+    {
+        return response([
+            'namediadanhs'=>DiaDanh::all('id','ten_dia_danh')
+        ],200);
+    }
     /**
      * Show the form for creating a new resource.
      *

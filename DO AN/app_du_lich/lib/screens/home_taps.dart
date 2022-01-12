@@ -1,5 +1,6 @@
 import 'package:app_du_lich/provider/user_provider.dart';
-import 'package:app_du_lich/screens/dang_nhap_dang_ky/home_screen.dart';
+import 'package:app_du_lich/screens/create_and_update/de_xuat_dia_danh.dart';
+import 'package:app_du_lich/screens/create_and_update/tao_bai_viet.dart';
 import 'package:app_du_lich/screens/tim_kiem.dart';
 import 'package:app_du_lich/screens/trang_bai_viet.dart';
 import 'package:app_du_lich/screens/trang_ca_nhan.dart';
@@ -7,14 +8,15 @@ import 'package:app_du_lich/screens/trang_dia_danh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'create_and_update/chinh_sua_thong_tin.dart';
-import 'create_and_update/de_xuat_dia_danh.dart';
 import 'create_and_update/doi_mat_khau.dart';
 import 'dang_nhap_dang_ky/login.dart';
 import 'trang_ca_nhan.dart';
+import 'package:circular_menu/circular_menu.dart'; // Man create
 
 class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   HomePageState createState() => HomePageState();
 }
@@ -76,7 +78,7 @@ class HomePageState extends State<HomePage>
                           width: 30,
                         ),
                         SizedBox(width: 3),
-                        Text(
+                        const Text(
                           "TRAVEL APP",
                           style: TextStyle(
                               color: Colors.white,
@@ -137,7 +139,7 @@ class HomePageState extends State<HomePage>
               endDrawer: Drawer(
                 child: ListView(
                   children: [
-                    DrawerHeader(
+                    const DrawerHeader(
                       child: CircleAvatar(
                           backgroundImage: AssetImage(
                         //Avatar
@@ -145,7 +147,7 @@ class HomePageState extends State<HomePage>
                       )),
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.person,
                         color: Colors.green,
                       ),
@@ -158,11 +160,11 @@ class HomePageState extends State<HomePage>
                       },
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.edit,
                         color: Colors.blue,
                       ),
-                      title: Text("Chỉnh sửa thông tin cá nhân"),
+                      title: const Text("Chỉnh sửa thông tin cá nhân"),
                       onTap: () {
                         Navigator.push(
                             context,
@@ -201,19 +203,28 @@ class HomePageState extends State<HomePage>
                   ],
                 ),
               ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DeXuatDiaDanh()));
-                },
-                child: SvgPicture.asset(
-                  'assets/images/star.svg',
-                  height: 50,
-                  width: 50,
-                ),
-                tooltip: 'Đề xuất 1 địa danh',
-                backgroundColor: Colors.white,
-              ))),
+              floatingActionButton: CircularMenu(
+                  // Man Update
+                  alignment: Alignment.bottomRight,
+                  radius: 80,
+                  items: [
+                    CircularMenuItem(
+                        icon: Icons.add,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const TaoBaiViet()));
+                        }),
+                    CircularMenuItem(
+                        icon: Icons.message,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const DeXuatDiaDanh()));
+                        }),
+                  ]))),
     );
   }
 }

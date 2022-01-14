@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Shards Dashboard Lite - Free Bootstrap Admin Template – DesignRevision</title>
+  <title>Admin Travel App</title>
   <meta name="description"
     content="A high-quality &amp; free Bootstrap admin dashboard template pack that comes with lots of templates and components.">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -29,7 +29,7 @@
               <div class="d-table m-auto">
                 <img id="main-logo" class="d-inline-block align-top mr-1" style="max-width: 25px;"
                   src="../images/shards-dashboards-logo.svg" alt="Shards Dashboard">
-                <span class="d-none d-md-inline ml-1">Shards Dashboard</span>
+                <span class="d-none d-md-inline ml-1">Admin Travel App</span>
               </div>
             </a>
             <a class="toggle-sidebar d-sm-inline d-md-none d-lg-none">

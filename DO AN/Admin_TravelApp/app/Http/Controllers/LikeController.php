@@ -49,42 +49,6 @@ class LikeController extends Controller
             ], 200);
     }
 
-     public function checkedlike($id)
-    {
-        $post= BaiViet::find($id);
-
-        $like= $post->likes()->where('user_id', auth()->user()->id)->first();
-
-        //if not liked then liked
-        if(!$like)
-        {
-            return response([
-                'message'=> 'falselike'
-            ], 200);
-        }
-
-            return response([
-                'message'=> 'truelike'
-            ], 201);
-    }
-
-    public function checkeddislike($id)
-    {
-        $post= BaiViet::find($id);
-
-        $dislike= $post->dislikes()->where('user_id', auth()->user()->id)->first();
-
-        if($dislike)
-        {
-            return response([
-                'message'=> 'truedislike'
-            ], 202);
-        }
-        //else dislike
-        return response([
-                'message'=> 'falsedislike'
-            ], 203);
-    }
     /**
      * Show the form for creating a new resource.
      *

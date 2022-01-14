@@ -34,11 +34,12 @@ class CreateDislikesTable extends Migration
             $table->unsignedBigInteger('user_id');
         });
 
-        Schema::create('danh_gias', function (Blueprint $table) {
+        /*Schema::create('danh_gias', function (Blueprint $table) {
             $table->id();
+            $table->timestamps();
             $table->unsignedBigInteger('dia_danh_id');
             $table->unsignedBigInteger('user_id');
-        });
+        });*/
     }
 
     /**

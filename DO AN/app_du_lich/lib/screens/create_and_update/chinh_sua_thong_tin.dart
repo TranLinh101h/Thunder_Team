@@ -19,9 +19,9 @@ class ChinhSuaThongTin extends StatefulWidget {
 
 class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
   TextEditingController _txtName = TextEditingController();
-  final TextEditingController _txtGioiTinh = TextEditingController();
-  final TextEditingController _txtEmail = TextEditingController();
-  final TextEditingController _txtSdt = TextEditingController();
+  TextEditingController _txtGioiTinh = TextEditingController();
+  TextEditingController _txtEmail = TextEditingController();
+  TextEditingController _txtSdt = TextEditingController();
   User? user;
   bool _loading = true;
   File? _imageFile;
@@ -48,67 +48,66 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
 
   void getInfo() async {
     ApiResponse response = await getUser();
-    if(response.error == null )
-    {
+    if (response.error == null) {
       setState(() {
         user = response.data as User;
         _loading = !_loading;
         _txtName.text = user!.name ?? '';
         _txtEmail.text = user!.email ?? '';
         _txtSdt.text = user!.sdt ?? '';
-        _txtGioiTinh.text = user!.gioi_Tinh?? '';
+        _txtGioiTinh.text = user!.gioi_Tinh ?? '';
       });
-    } 
-    else if(response.error == unauthorized) {
+    } else if (response.error == unauthorized) {
       logout().then((value) => {
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage() ) , (route) => false)
-      } );
-    }
-    else
-    {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('${response.error}')
-    ));
-    setState(() {
-      _loading = !_loading;
-    });
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LoginPage()),
+                (route) => false)
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+      setState(() {
+        _loading = !_loading;
+      });
     }
   }
 
-   @override
+  @override
   void initState() {
     getInfo();
     super.initState();
   }
 
   void _updateProfile() async {
-    String? image = _imageFile == null? null: getStringImage(_imageFile); // Nếu có ảnh sẽ encode sang mã base 64
-    ApiResponse response = await updateUser(_txtName.text, _txtGioiTinh.text, _txtEmail.text, _txtSdt.text, image! );
+    String? image = _imageFile == null
+        ? null
+        : getStringImage(_imageFile); // Nếu có ảnh sẽ encode sang mã base 64
+    ApiResponse response =
+        await updateUser(_txtName.text, _txtEmail.text, _txtSdt.text, image);
 
     setState(() {
       _loading = !_loading;
     });
-    if(response.error == null ){
+    if (response.error == null) {
       setState(() {
-      _loading = !_loading;
-    });
+        _loading = !_loading;
+      });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('${response.data}'),
       ));
+    } else if (response.error == unauthorized) {
+      logout().then((value) => {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LoginPage()),
+                (route) => false)
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+      setState(() {
+        _loading = !_loading;
+      });
     }
-    else if (response.error == unauthorized ){
-    logout().then((value)=>{
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>LoginPage()), (route) => false)
-    }); 
-  }
-  else{
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('${response.error}')
-    ));
-    setState(() {
-      _loading = !_loading;
-    });
-  }
   }
 
   // ignore: unused_element, non_constant_identifier_names
@@ -149,46 +148,47 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
 
   Widget _buildProfile() {
     return GestureDetector(
-      child: Container(
-        margin : EdgeInsets.only(left:  95, right:95 ),
-        width: 50,
-        height: 110,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(60),
-          image: _imageFile == null ? user!.img != null ? DecorationImage(
-            image: NetworkImage('${user!.img}'),
-            fit: BoxFit.cover ) :
-          null : DecorationImage(
-            image: FileImage( _imageFile ?? File('')),
-            fit: BoxFit.cover
-            ),
-          color: Colors.amber
-        ) ,
-      ),
+        child: Container(
+          margin: EdgeInsets.only(left: 95, right: 95),
+          width: 50,
+          height: 110,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(60),
+              image: _imageFile == null
+                  ? user!.img != null
+                      ? DecorationImage(
+                          image: NetworkImage('${user!.img}'),
+                          fit: BoxFit.cover)
+                      : null
+                  : DecorationImage(
+                      image: FileImage(_imageFile ?? File('')),
+                      fit: BoxFit.cover),
+              color: Colors.amber),
+        ),
         onTap: () {
           _pickImageFromGallery();
-      }
-    );
+        });
   }
 
   // ignore: non_constant_identifier_names
-  Widget _BuildTextField(String txtLabel, String txtName, TextEditingController controll) {
+  Widget _BuildTextField(
+      String txtLabel, String txtName, TextEditingController controll) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-    Text(
-      txtLabel,
-      style: const TextStyle(
-          fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15),
-    ),
-    TextField(
-      controller: controll,
-      decoration: InputDecoration(
-          hintText: txtName, hintStyle: const TextStyle(fontSize: 18)),
-    ),
-    const SizedBox(
-      height: 10,
-    )
+        Text(
+          txtLabel,
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15),
+        ),
+        TextField(
+          controller: controll,
+          decoration: InputDecoration(
+              hintText: txtName, hintStyle: const TextStyle(fontSize: 18)),
+        ),
+        const SizedBox(
+          height: 10,
+        )
       ],
     );
   }
@@ -238,30 +238,33 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
 
   @override
   Widget build(BuildContext context) {
-    return _loading ?const Center(child: CircularProgressIndicator()) : Scaffold(
-      appBar: AppBar(
-        title: const Text('Chỉnh sửa thông tin'),
-      ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: _buildProfile(),
-          ),
-          _ChangeInformation(),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
+    return _loading
+        ? const Center(child: CircularProgressIndicator())
+        : Scaffold(
+            appBar: AppBar(
+              title: const Text('Chỉnh sửa thông tin'),
+            ),
+            body: ListView(
               children: [
-                _BuildTextField("Tên hiển thị", "Trần Linh", _txtName),
-                _BuildTextField("Giới tính", "Nam", _txtGioiTinh),
-                _BuildTextField("Email", "thunderteam@gmail.com", _txtEmail),
-                _BuildTextField("Số điện thoại", "0706050423", _txtSdt),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: _buildProfile(),
+                ),
+                _ChangeInformation(),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    children: [
+                      _BuildTextField("Tên hiển thị", "Trần Linh", _txtName),
+                      _BuildTextField("Giới tính", "Nam", _txtGioiTinh),
+                      _BuildTextField(
+                          "Email", "thunderteam@gmail.com", _txtEmail),
+                      _BuildTextField("Số điện thoại", "0706050423", _txtSdt),
+                    ],
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
   }
 }

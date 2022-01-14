@@ -21,7 +21,7 @@ class AuthController extends Controller
             'name'=> $attrs['name'],
             'sdt'=> $attrs['sdt'],
             'email' => $attrs['email'],
-            'password' => bcrypt($attrs['password'])
+            'password' => bcrypt($attrs['password'])//Ma hoa mat khau
         ]);
 
         //return
@@ -76,7 +76,6 @@ class AuthController extends Controller
 
         auth()->user()->update([
             'name' =>$request->name,
-            'gioi_Tinh' =>$request->gioi_Tinh,
             'email' =>$request->email,
             'img' =>$img,
             'sdt'=>$request->sdt

@@ -125,8 +125,8 @@ String? getStringImage(File? file) {
 }
 
 // Man create 10/01/2022 | Mục đích cập nhật thông tin user
-Future<ApiResponse> updateUser(String name, String gioi_Tinh, String email,
-    String sdt, String? img) async {
+Future<ApiResponse> updateUser(
+    String name, String email, String sdt, String? img) async {
   ApiResponse apiResponse = ApiResponse();
   try {
     String token = await getToken();
@@ -136,14 +136,8 @@ Future<ApiResponse> updateUser(String name, String gioi_Tinh, String email,
           'Authorization': 'Bearer $token'
         },
         body: img == null
-            ? {'name': name, 'gioi_Tinh': gioi_Tinh, 'email': email, 'sdt': sdt}
-            : {
-                'name': name,
-                'gioi_Tinh': gioi_Tinh,
-                'email': email,
-                'sdt': sdt,
-                'img': img
-              });
+            ? {'name': name, 'email': email, 'sdt': sdt}
+            : {'name': name, 'email': email, 'sdt': sdt, 'img': img});
 
     switch (response.statusCode) {
       case 200:

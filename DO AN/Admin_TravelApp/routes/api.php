@@ -39,7 +39,7 @@ Route::group(['middleware' =>['auth:sanctum']], function(){
     Route::put('/updatepass', [AuthController::class, 'updatePass']); // Man update 07/01/2022 | update bai viet
 
 
-    
+     
     //Post
     Route::get('/baiviet', [BaiVietController::class, 'index']);//tranLinh: get all baiviet
     Route::post('/baiviet', [BaiVietController::class, 'store']);// Man update 07/01/2022 | store bai viet
@@ -50,7 +50,7 @@ Route::group(['middleware' =>['auth:sanctum']], function(){
 
 
      // Dia danh - Loai dia danh - De xuat
-    Route::get('/diadanh', [DiaDanhController::class, 'index']);//TranLinh: get all dia danh
+    Route::get('/diadanh', [DiaDanhController::class, 'dsdiadanh']);//TranLinh: get all dia danh
     Route::get('/namediadanh', [DiaDanhController::class, 'getNameDiaDanh']); // Man update 07/01/2022 | Sử lý trong phần tạo bài viết android
     Route::get('/loaidiadanhid', [LoaiDiaDanhController::class, 'getloaidiadanh']); // Man update 07/01/2022 | Sử lý trong phần tạo bài viết android
     Route::post('/dexuat', [DeXuatController::class, 'store']);// Man update 07/01/2022 | store bai viet

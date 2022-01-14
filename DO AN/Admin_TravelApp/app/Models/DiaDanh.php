@@ -26,14 +26,14 @@ class DiaDanh extends Model
     ];
 
     public function loaidiadanh(){
-        return $this->belongsTo(DiaDanh::class);
+        return $this->belongsTo(LoaiDiaDanh::class);
     }
 
     public function baiviets(){
         return $this->hasMany(BaiViet::class);
     }
 
-    public function miens(){
+    public function mien(){
         return $this->belongsTo(Mien::class);
     }
 
@@ -41,7 +41,7 @@ class DiaDanh extends Model
         return $this->belongsTo(PhanVung::class);
     }
 
-    public function hinhdiadiem(){
+    public function hinhdiadiems(){
         return $this->hasMany(HinhDiaDiem::class);
     }
 

@@ -18,7 +18,7 @@ class DiaDanhController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function dsdiadanh()
     {
         return response([
             'diadanhs'=>DiaDanh::where('status','=', '1')->orderby('created_at', 'desc')->withCount('baiviets')
@@ -42,6 +42,14 @@ class DiaDanhController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    
+     public function index()//TranLinh
+    {
+        $lstDiaDanh= DiaDanh::withCount('baiviets')->with('phanvung:ten_vung')->with('mien:ten_Mien')->with('loaidiadanh:ten_Loai')->get();//->get();
+        echo var_dump($lstDiaDanh);
+        //return view('dia_danh', ['lstDiaDanh' => $lstDiaDanh]);
+    }
+
     public function create()
     {
         //

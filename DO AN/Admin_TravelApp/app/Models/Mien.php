@@ -8,8 +8,4 @@ use Illuminate\Database\Eloquent\Model;
 class Mien extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'ten_Mien'
-    ];
 }

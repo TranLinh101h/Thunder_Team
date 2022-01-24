@@ -1,3 +1,4 @@
+import 'package:app_du_lich/objects/hinh_bai_viet_object.dart';
 import 'package:app_du_lich/objects/user_object.dart';
 
 class Bai_Viet {
@@ -13,6 +14,7 @@ class Bai_Viet {
   User? user;
   bool? like;
   bool? dislike;
+  Hinh_Bai_Viet? hinh_bai_viet;
 
   Bai_Viet(
       {this.id,
@@ -26,7 +28,8 @@ class Bai_Viet {
       this.dislikes_count,
       this.user,
       this.like,
-      this.dislike});
+      this.dislike,
+      this.hinh_bai_viet});
 
   factory Bai_Viet.fromJson(Map<String, dynamic> r) {
     return Bai_Viet(
@@ -41,6 +44,7 @@ class Bai_Viet {
         dislikes_count: r['dislikes_count'],
         like: r['likes'].length > 0,
         dislike: r['dislikes'].length > 0,
+        hinh_bai_viet: Hinh_Bai_Viet(img: r['hinhbaiviet'][0]['img']),
         user: User(
             id: r['user']['id'],
             name: r['user']['name'],

@@ -9,6 +9,8 @@ use App\Models\DiaDanh;
 use App\Models\Like;
 use App\Models\Dislike;
 use App\Models\View;
+use App\Models\HinhBaiViet;
+
 class BaiViet extends Model
 {
     use HasFactory;
@@ -38,5 +40,9 @@ class BaiViet extends Model
 
      public function views(){
         return $this->hasMany(View::class);
+    }
+
+     public function hinhbaiviet(){
+        return $this->hasMany(HinhBaiViet::class);
     }
 }

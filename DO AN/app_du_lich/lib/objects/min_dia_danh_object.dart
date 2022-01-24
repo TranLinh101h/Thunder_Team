@@ -1,6 +1,6 @@
 class Min_Dia_Danh {
-  final id;
-  final ten_dia_danh;
+   final id;
+   final ten_dia_danh;
 
   Min_Dia_Danh(this.id, this.ten_dia_danh);
 

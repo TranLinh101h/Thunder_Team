@@ -1,5 +1,7 @@
 import 'package:app_du_lich/objects/api_response.dart';
+import 'package:app_du_lich/objects/bai_viet_object.dart';
 import 'package:app_du_lich/objects/user_object.dart';
+import 'package:app_du_lich/provider/bai_viet_provider.dart';
 import 'package:app_du_lich/provider/user_provider.dart';
 import 'package:app_du_lich/screens/chi_tiet_dia_danh.dart';
 import 'package:app_du_lich/screens/create_and_update/chinh_sua_thong_tin.dart';
@@ -8,7 +10,9 @@ import 'package:app_du_lich/screens/dang_nhap_dang_ky/home_screen.dart';
 import 'package:app_du_lich/screens/dang_nhap_dang_ky/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'chi_tiet_baiviet.dart';
 import 'danh_sach_like.dart';
 
 class TrangCaNhan extends StatefulWidget {
@@ -22,6 +26,24 @@ class TrangCaNhan extends StatefulWidget {
 // DetailsScreen({this.index});
 class TrangCaNhanState extends State<TrangCaNhan> {
   User user = User();
+  List<dynamic> lstBaiViet = [];
+
+  void loadBaiViet() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    ApiResponse response =
+        await getAllBaiVietUser(int.parse(pref.getInt('userId').toString()));
+    if (response.error == null) {
+      if (response.data != null) {
+        setState(() {
+          lstBaiViet = response.data! as List<dynamic>;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+    }
+  }
+
   Future<void> load() async {
     ApiResponse response = await getUser();
     if (response.error == null) {
@@ -36,309 +58,227 @@ class TrangCaNhanState extends State<TrangCaNhan> {
     }
   }
 
+//like or unlike
+  void handleLike(int id) async {
+    ApiResponse response = await likeOrUnlike(id);
+    if (response.error == null) {
+      load();
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+    }
+  }
+
+//dislike or undislike
+  void handleDislike(int id) async {
+    ApiResponse response = await dislikeOrUndislike(id);
+    if (response.error == null) {
+      load();
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+    }
+  }
+
+//view
+  void views(int id) async {
+    ApiResponse response = await view(id);
+    if (response.error == null) {
+      load();
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     load();
+    loadBaiViet();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              backgroundColor: Colors.black,
-              expandedHeight: 300.0,
-              floating: false,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                title: Text(
-                  user.name.toString(),
-                  style: TextStyle(
-                    fontSize: 15,
-                  ),
-                ),
-                background: Stack(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: double.infinity,
-                      child: Image.asset(
-                        //background
-                        'images/img3.jpg',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.8),
-                          ],
-                          begin: Alignment.topCenter,
-                          stops: [0.6, 1],
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.only(top: 30, bottom: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          //Title name phần chữ lớn
-                          Text(
-                            user.name.toString(),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 25,
-                                fontFamily: "Sigmar"),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Container(
-                                  height: 45,
-                                  decoration:
-                                      BoxDecoration(shape: BoxShape.circle),
-                                  child: CircleAvatar(
-                                    backgroundImage: AssetImage(
-                                      //Avatar
-                                      "images/fox.jpg",
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  "0 Bài chia sẻ",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    //Mở cài đặt
-                    Align(
-                        alignment: Alignment.topRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 5, top: 27),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.menu,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
+    return lstBaiViet.length == 0
+        ? Center(
+            child: Text(
+              'Chưa có bài viết nào!',
+              style: TextStyle(color: Colors.red, fontSize: 25),
+            ),
+          )
+        : Container(
+            child: ListView.builder(
+                itemCount: lstBaiViet.length,
+                itemBuilder: (context, index) {
+                  Bai_Viet bv = lstBaiViet[index];
+                  DateTime time = DateTime.now();
+
+                  return Card(
+                    color: Colors.white,
+                    shadowColor: Colors.grey[600],
+                    child: Column(
+                      children: [
+                        ListTile(
+                            onTap: () {
+                              views(bv.id!);
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => CaiDat()));
+                                      builder: (context) => TrangChiTietBaiViet(
+                                            baiviet: bv,
+                                          )));
                             },
-                          ),
-                        ))
-                  ],
-                ),
-              ),
-            )
-          ];
-        },
-        body: Container(
-            child: ListView.builder(
-                itemCount: 5, //Khi code chức năng sẻ bổ xung lstBaiViet
-                itemBuilder: (context, index) => Card(
-                      //Bài viết
-                      color: Colors.white,
-                      shadowColor: Colors.grey[600],
-                      child: Column(
-                        children: [
-                          ListTile(
                             leading: CircleAvatar(
                                 backgroundImage: AssetImage(
                               //Avatar
                               "images/fox.jpg",
                             )),
-                            title: Text('Trần Linh',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
+                            title: Text(
+                              bv.user!.name.toString(),
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
                             subtitle: Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('24 phút'),
+                              child: Text(
+                                  bv.created_at.toString().substring(0, 22)),
                             ),
-                            trailing: PopupMenuButton(
-                              icon: Icon(Icons.more_horiz),
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                    child: ListTile(
-                                  leading: Icon(
-                                    Icons.update,
-                                    color: Colors.cyan,
-                                  ),
-                                  title: Text('Sửa bài viết'),
-                                )),
-                                PopupMenuItem(
-                                    child: ListTile(
-                                  leading: Icon(
-                                    Icons.delete_outline,
-                                    color: Colors.red,
-                                  ),
-                                  title: Text('Xóa bài viết'),
-                                ))
-                              ],
-                            ),
-                          ),
-                          // Content
-                          Container(
-                              width: double.infinity, //tràn hai bên
-                              child: Padding(
-                                padding: EdgeInsets.all(10),
-                                child: Text(
-                                  'Mùa đông',
-                                  softWrap: true,
-                                ),
-                              )),
-                          Image.asset('images/img3.jpg'),
-                          //Bài đc chia sẻ
-                          Container(
-                            margin: EdgeInsets.all(5),
-                            width: MediaQuery.of(context).size.width,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 100,
-                                  width: 120,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    //Hinh anh diem luu tru
-                                    child: Image.asset(
-                                      'images/img1.jpg',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Container(
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Name',
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 20),
-                                      ),
-                                      Text(
-                                        'description',
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.location_on,
-                                              color: Colors.green),
-                                          Text(
-                                            'Location',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.fade,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          //Tương tác
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 5, right: 5),
-                                      child: TextButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      LikePerson()));
-                                        },
-                                        child: Text('15',
-                                            style:
-                                                TextStyle(color: Colors.black)),
-                                      ),
-                                    ),
-                                    IconButton(
-                                        onPressed: () {
-                                          setState(() {});
-                                        },
-                                        icon: Icon(
-                                          Icons.thumb_up_alt_outlined,
-                                          color: Colors.blue,
-                                        )),
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 10, right: 10),
-                                      child: Text('5',
-                                          style:
-                                              TextStyle(color: Colors.black)),
-                                    ),
-                                    IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.thumb_down_outlined,
-                                          color: Colors.blue,
-                                        )),
-                                  ],
-                                ),
+                            trailing: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.clear),
+                              tooltip: 'Ẩn bài viết này',
+                            )),
+                        // Content
+                        Container(
+                            width: double.infinity, //tràn hai bên
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Text(
+                                bv.noi_Dung.toString() + '...',
+                                softWrap: true,
+                                style: TextStyle(fontSize: 15),
                               ),
-                              Container(
-                                child: Row(
-                                  children: [
-                                    Text('15 '),
-                                    Icon(
-                                      Icons.visibility_outlined,
-                                      color: Colors.grey,
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    ))),
-      ),
-    );
+                            )),
+                        Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Image.network(
+                                bv.hinh_bai_viet!.img.toString())),
+                        //Bài đc chia sẻ
+                        Container(
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                            color: Colors.blue,
+                            width: 1,
+                          ))),
+                          child: Card(
+                              color: Colors.blue,
+                              shadowColor: Colors.black,
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TrangChiTietDiaDanh(
+                                                    diaDanh: null,
+                                                  )));
+                                    },
+                                    leading: CircleAvatar(
+                                      backgroundImage:
+                                          AssetImage('assets/images/ts2.png'),
+                                    ),
+                                    title: Text(
+                                      'Khu vực núi tuyết',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15),
+                                    ),
+                                    subtitle: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text('5 tháng'),
+                                    ),
+                                  ),
+                                ],
+                              )),
+                        ),
+
+                        //Tương tác
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 5, right: 5),
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LikePerson()));
+                                      },
+                                      child: Text(
+                                        bv.likes_count.toString(),
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        setState(() {});
+                                        handleLike(bv.id!);
+                                      },
+                                      icon: Icon(
+                                        bv.like!
+                                            ? Icons.thumb_up_alt
+                                            : Icons.thumb_up_alt_outlined,
+                                        color: Colors.blue,
+                                      )),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 5, right: 5),
+                                    child: Text(bv.dislikes_count.toString(),
+                                        style: TextStyle(color: Colors.black)),
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        handleDislike(bv.id!);
+                                      },
+                                      icon: Icon(
+                                        bv.dislike!
+                                            ? Icons.thumb_down
+                                            : Icons.thumb_down_outlined,
+                                        color: Colors.blue,
+                                      )),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              child: Row(
+                                children: [
+                                  Text(bv.views_count.toString()),
+                                  Icon(
+                                    Icons.visibility_outlined,
+                                    color: Colors.grey,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }));
   }
 }
 

@@ -23,6 +23,8 @@ class User extends Authenticatable
         'sdt',
         'img',
         'password',
+        'status_email',
+        'status_sdt'
     ];
 
     /**

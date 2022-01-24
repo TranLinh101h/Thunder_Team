@@ -13,7 +13,7 @@ class CreateDeXuatsTable extends Migration
      */
     public function up()
     {
-         Schema::create('de_xuats', function (Blueprint $table) { // Man update
+        Schema::create('de_xuats', function (Blueprint $table) { // Man update
             $table->id();
             $table->integer('loai_dia_danh_id');
             $table->unsignedBigInteger('user_id');

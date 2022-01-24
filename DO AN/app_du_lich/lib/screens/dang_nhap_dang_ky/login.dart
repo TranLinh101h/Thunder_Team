@@ -2,7 +2,6 @@ import 'package:app_du_lich/objects/api_response.dart';
 import 'package:app_du_lich/objects/user_object.dart';
 import 'package:app_du_lich/provider/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../home_taps.dart';
 import 'singup.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,8 @@ import 'package:flutter/widgets.dart';
 import 'home_screen.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return LoginState();
@@ -22,6 +23,8 @@ class LoginState extends State<LoginPage> {
   TextEditingController email = TextEditingController();
   TextEditingController pass = TextEditingController();
   bool loading = false;
+  bool showPass = true; // Man update 15/01/2022
+
   void loginUser() async {
     ApiResponse response = await login(email.text, pass.text);
     if (response.error == null) {
@@ -40,7 +43,7 @@ class LoginState extends State<LoginPage> {
     await pref.setString('token', user.token ?? '');
     await pref.setInt('userId', user.id ?? 0);
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => HomePage()), (route) => false);
+        MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
   }
 
   @override
@@ -57,14 +60,14 @@ class LoginState extends State<LoginPage> {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ManHinhChinh()));
           },
-          icon: Icon(
+          icon:const Icon(
             Icons.arrow_back_ios,
             size: 20,
             color: Colors.black,
           ),
         ),
       ),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: double.infinity,
         child: Column(
@@ -79,20 +82,20 @@ class LoginState extends State<LoginPage> {
                       children: [
                         Container(
                           height: MediaQuery.of(context).size.height / 3,
-                          decoration: BoxDecoration(
+                          decoration:const BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage("images/DangNhap.png"))),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
+                          padding:const EdgeInsets.symmetric(horizontal: 40),
                           child: Container(
-                            padding: EdgeInsets.all(10),
+                            padding:const EdgeInsets.all(10),
                             child: TextFormField(
                               keyboardType: TextInputType.emailAddress,
                               controller: email,
                               validator: (val) =>
                                   val!.isEmpty ? 'Vui lòng điền email' : null,
-                              decoration: InputDecoration(
+                              decoration:const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'Email',
                               ),
@@ -100,35 +103,48 @@ class LoginState extends State<LoginPage> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
+                          padding:const EdgeInsets.symmetric(horizontal: 40),
                           child: Container(
-                            padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                            padding:const EdgeInsets.fromLTRB(10, 10, 10, 0),
                             child: TextFormField(
                               validator: (val) => val!.length < 6
                                   ? 'Mật khẩu tổi thiểu 6 ký tự'
                                   : null,
                               controller: pass,
-                              obscureText: true,
+                              obscureText: showPass,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'Mật khẩu',
+                                suffixIcon: IconButton(
+                                  onPressed: (){}, 
+                                  icon: IconButton(
+                                    onPressed: (){
+                                      setState(() {
+                                        showPass = !showPass;
+                                      });
+                                    }, 
+                                    icon: Icon(showPass ?
+                                     Icons.visibility_off : Icons.remove_red_eye ,
+                            color: showPass ? Colors.blue : Colors.grey, // Khi _showPassword là true màu là xanh và ngược lại
+                                    ) )
+                                  )
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(
+                      const  SizedBox(
                           height: 15,
                         ),
                         loading
-                            ? Center(
+                            ?const Center(
                                 child: CircularProgressIndicator(),
                               )
                             : Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 40),
+                                padding: const EdgeInsets.symmetric(horizontal: 40),
                                 child: Container(
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(50),
-                                      border: Border(
+                                      border: const Border(
                                         bottom: BorderSide(color: Colors.black),
                                         top: BorderSide(color: Colors.black),
                                         left: BorderSide(color: Colors.black),
@@ -145,12 +161,12 @@ class LoginState extends State<LoginPage> {
                                         loginUser();
                                       }
                                     },
-                                    color: Color(0xff0095ff),
+                                    color: const Color(0xff0095ff),
                                     shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: Colors.black),
+                                        side: const BorderSide(color: Colors.black),
                                         borderRadius:
                                             BorderRadius.circular(50)),
-                                    child: Text(
+                                    child: const Text(
                                       "Đăng Nhập",
                                       style: TextStyle(
                                           color: Colors.white,
@@ -166,15 +182,15 @@ class LoginState extends State<LoginPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text("Chưa có tài khoản?"),
+                    const  Text("Chưa có tài khoản?"),
                       FlatButton(
                         onPressed: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => SingupPage()));
+                                  builder: (context) => const SingupPage()));
                         },
-                        child: Text("Đăng Ký Ngay!",
+                        child: const Text("Đăng Ký Ngay!",
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w600)),
                       )
@@ -185,7 +201,7 @@ class LoginState extends State<LoginPage> {
                     children: <Widget>[
                       FlatButton(
                         onPressed: () {},
-                        child: Text(
+                        child: const Text(
                           "Quên mật khẩu",
                           style: TextStyle(fontSize: 15, color: Colors.grey),
                         ),

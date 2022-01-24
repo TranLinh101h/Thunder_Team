@@ -3,12 +3,15 @@ import 'package:app_du_lich/objects/bai_viet_object.dart';
 import 'package:app_du_lich/screens/chi_tiet_baiviet.dart';
 import 'package:app_du_lich/screens/chi_tiet_dia_danh.dart';
 import 'package:app_du_lich/screens/danh_sach_like.dart';
-import 'package:app_du_lich/screens/trang_ca_nhan.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app_du_lich/provider/bai_viet_provider.dart';
 
 class TrangBaiViet extends StatefulWidget {
+  // Man update 23/01/2022
+  const TrangBaiViet({Key? key}) : super(key: key);
+
   @override
   TrangBaiVietState createState() => TrangBaiVietState();
 }
@@ -65,7 +68,6 @@ class TrangBaiVietState extends State<TrangBaiViet> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     load();
   }
@@ -134,6 +136,10 @@ class TrangBaiVietState extends State<TrangBaiViet> {
                                 style: TextStyle(fontSize: 15),
                               ),
                             )),
+                        Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Image.network(
+                                bv.hinh_bai_viet!.img.toString())),
                         //Bài đc chia sẻ
                         Container(
                           decoration: BoxDecoration(
@@ -173,16 +179,6 @@ class TrangBaiVietState extends State<TrangBaiViet> {
                                       child: Text('5 tháng'),
                                     ),
                                   ),
-                                  Container(
-                                      width: double.infinity, //tràn hai bên
-                                      child: Padding(
-                                        padding: EdgeInsets.all(10),
-                                        child: Text(
-                                            'Khu vực thắng cảnh đẹp tại Nhật Bản',
-                                            softWrap: true,
-                                            style: TextStyle(fontSize: 15)),
-                                      )),
-                                  Image.asset('images/img1.jpg')
                                 ],
                               )),
                         ),

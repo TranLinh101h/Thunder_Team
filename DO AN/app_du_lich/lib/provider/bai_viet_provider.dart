@@ -36,6 +36,37 @@ Future<ApiResponse> getAllBaiViet() async {
   return apiResponse;
 }
 
+Future<ApiResponse> getAllBaiVietUser(int user_id) async {
+  ApiResponse apiResponse = ApiResponse();
+
+  try {
+    String token = await getToken();
+    final response = await http.post(Uri.parse(baivietuserURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    }, body: {
+      'user_id': user_id.toString()
+    });
+    switch (response.statusCode) {
+      case 200:
+        apiResponse.data = jsonDecode(response.body)['baiviets']
+            .map((p) => Bai_Viet.fromJson(p))
+            .toList();
+        apiResponse.data as List<dynamic>;
+        break;
+      case 401:
+        final errors = unauthorized;
+        break;
+      default:
+        apiResponse.error = somethingWentWrong;
+        break;
+    }
+  } catch (e) {
+    apiResponse.error = 'ngoai le';
+  }
+  return apiResponse;
+}
+
 // // encoded image sang mã base64 để lưu trữ
 // String? getStringImage(File? file) {
 //   if(file == null) return null;
@@ -44,7 +75,7 @@ Future<ApiResponse> getAllBaiViet() async {
 
 // ignore: slash_for_doc_comments
 /**
- *  author : Mẩn hecker
+ *  author : Mẩn sợ ma
  *  Update: : 06/01/2022 20:31:10
  *  fix img tao bai viet and url 404
  *  create sua bai viet 
@@ -144,7 +175,7 @@ Future<ApiResponse> getNameDiaDanh() async {
   return apiResponse;
 }
 
-Future<ApiResponse> taoBaiViet(String body, int idDiaDanh) async {
+Future<ApiResponse> taoBaiViet(String body, String idDiaDanh) async {
   ApiResponse apiResponse = ApiResponse();
 
   try {

@@ -1,3 +1,4 @@
+//const baseURL = 'http://192.168.43.189:8000/api';
 const baseURL = 'http://192.168.43.218:8000/api';
 const loginUrl = baseURL + '/login';
 const registerURL = baseURL + '/register';
@@ -21,6 +22,10 @@ const idLoaiDiaDanhURL =
 const deXuatURL = baseURL + '/dexuat'; // Man create 09/01/2022 : 08:22:10
 const updatePassURL =
     baseURL + '/updatepass'; // Man create 09/01/2022 : 15:22:10
+const hidenEmailURL =
+    baseURL + '/hidenemail'; // Man create 09/01/2022 : 15:22:10
+const hidenSdtURL = baseURL + '/hidensdt'; // Man create 09/01/2022 : 15:22:10
+const baivietuserURL = baseURL + '/baivietuser'; //TranLinh: 24/1/2022
 
 const serverError = 'SERVER ERROR';
 const unauthorized = 'Unauthorized';

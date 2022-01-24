@@ -46,7 +46,7 @@ class DeXuatController extends Controller
         $deXuat = DeXuat::create([
             'loai_dia_danh_id' =>$request->loai_dia_danh_id,
             'user_id' =>auth()->user()->id,
-            'ten_Diem' =>$request->ten_Diem, 
+            'ten_Diem' =>$request->ten_Diem,
             'ten_Goi_Khac' =>$request->ten_Goi_Khac,
             'mo_Ta' =>$request->mo_Ta,
             'kinh_Do' =>$request->kinh_Do,

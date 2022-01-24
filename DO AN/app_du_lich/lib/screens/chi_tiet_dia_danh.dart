@@ -1,31 +1,30 @@
 import 'dart:math';
 import 'package:app_du_lich/objects/api_response.dart';
-import 'package:app_du_lich/objects/dia_danh_object.dart';
-import 'package:app_du_lich/objects/diem_luu_tru_object.dart';
+import 'package:app_du_lich/objects/min_dia_danh_object.dart';
 import 'package:app_du_lich/provider/diem_luu_tru_provider.dart';
 import 'package:app_du_lich/screens/create_and_update/tao_bai_viet.dart';
-import 'package:app_du_lich/screens/map.dart';
+// import 'package:app_du_lich/screens/map.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+// import 'package:flutter_svg/svg.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 
 class TrangChiTietDiaDanh extends StatefulWidget {
   final dynamic diaDanh;
-  TrangChiTietDiaDanh({Key? key, required this.diaDanh}) : super(key: key);
+  const TrangChiTietDiaDanh({Key? key, required this.diaDanh}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
+    // ignore: no_logic_in_create_state
     return TrangChiTietDiaDanhState(diaDanh: diaDanh);
   }
 }
 
-//final int index;
-// DetailsScreen({this.index});
+// ignore: non_constant_identifier_names
 Widget DiemLuuTru(BuildContext context, String image) {
   return Card(
     child: Container(
         height: MediaQuery.of(context).size.height * 0.34,
         width: MediaQuery.of(context).size.width * 0.5,
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
@@ -35,10 +34,10 @@ Widget DiemLuuTru(BuildContext context, String image) {
             children: [
               Expanded(
                 flex: 5,
-                child: Container(
+                child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.34,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
                       bottomLeft: Radius.circular(20),
                     ),
@@ -49,7 +48,7 @@ Widget DiemLuuTru(BuildContext context, String image) {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
               Expanded(
@@ -85,6 +84,7 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
   late final dynamic diaDanh;
   TrangChiTietDiaDanhState({required this.diaDanh});
   List<dynamic> lstLuuTru = [];
+  late Min_Dia_Danh selectDiaDanh; // Man crreate 15/01/2022 : 12:10:20
 
   List<String> lstImage = [
     'images/img1.jpg',
@@ -108,10 +108,10 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
   }
 
   @override
-  void initState() {
-    // TODO: implement initState
-
+  void initState() { // Man update 12:10:22 
     load();
+    selectDiaDanh = Min_Dia_Danh(diaDanh.id, diaDanh.ten_dia_danh);
+    super.initState();
   }
 
   @override
@@ -134,7 +134,7 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
                 ),
                 background: Stack(
                   children: [
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: double.infinity,
                       child: ImageSlideshow(
@@ -169,7 +169,7 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
 
                         /// Called whenever the page in the center of the viewport changes.
                         onPageChanged: (value) {
-                          print('Page changed: $value');
+                          // print('Page changed: $value');
                         },
 
                         /// Auto scroll interval.
@@ -187,19 +187,19 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
                             Colors.black.withOpacity(0.8),
                           ],
                           begin: Alignment.topCenter,
-                          stops: [0.6, 1],
+                          stops:const [0.6, 1],
                           end: Alignment.bottomCenter,
                         ),
                       ),
                       width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.only(top: 30, bottom: 10),
+                      padding:const EdgeInsets.only(top: 30, bottom: 10),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             diaDanh.ten_dia_danh,
-                            style: TextStyle(
+                            style:const TextStyle(
                                 color: Colors.white,
                                 fontSize: 25,
                                 fontFamily: "Sigmar"),
@@ -217,9 +217,9 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                TaoBaiViet()));
+                                                TaoBaiViet(selectDiaDanh: selectDiaDanh)));
                                   },
-                                  icon: Icon(
+                                  icon:const Icon(
                                     Icons.open_in_new,
                                     color: Colors.grey,
                                   ),
@@ -230,20 +230,20 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
                                     IconButton(
                                         tooltip: 'Xem hình ảnh',
                                         onPressed: () {},
-                                        icon: Icon(
+                                        icon:const Icon(
                                           Icons.image,
                                           color: Colors.blue,
                                         )),
                                     IconButton(
                                         tooltip: 'Vị trí',
                                         onPressed: () {},
-                                        icon: Icon(
+                                        icon:const Icon(
                                           Icons.location_on,
                                           color: Colors.green,
                                         )),
                                     Text(
                                       diaDanh.share_count.toString(),
-                                      style: TextStyle(
+                                      style:const TextStyle(
                                         color: Colors.white,
                                       ),
                                     ),
@@ -264,49 +264,49 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
         body: Container(
           width: MediaQuery.of(context).size.width,
           height: 300,
-          padding: EdgeInsets.all(20),
+          padding:const EdgeInsets.all(20),
           child: ListView(
             children: [
               Text(
                 diaDanh.ten_dia_danh,
-                style: TextStyle(
+                style:const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 24,
                 ),
               ),
-              SizedBox(
+            const SizedBox(
                 height: 20,
               ),
               Text(
                 diaDanh.mo_Ta,
-                style: TextStyle(
+                style:const TextStyle(
                   fontSize: 18,
                 ),
                 softWrap: true,
               ),
-              SizedBox(
+            const  SizedBox(
                 height: 20,
               ),
               //hiển thị các điểm lưu trú của địa danh
-              Text(
+            const  Text(
                 "Điểm lưu trú",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 24,
                 ),
               ),
-              SizedBox(
+            const  SizedBox(
                 height: 20,
               ),
-              Container(
+              SizedBox(
                 height: MediaQuery.of(context).size.height * 0.3,
                 child: ListView.builder(
                   itemCount: lstLuuTru.length, //bổ xung list điểm lưu trú
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (ctx, i) => Container(
-                    margin: EdgeInsets.all(5),
+                    margin:const EdgeInsets.all(5),
                     width: MediaQuery.of(context).size.width * 0.95,
-                    padding: EdgeInsets.all(10),
+                    padding:const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors
                           .primaries[Random().nextInt(Colors.primaries.length)],
@@ -317,7 +317,7 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
                         Container(
                           height: 100,
                           width: 100,
-                          decoration: BoxDecoration(
+                          decoration:const BoxDecoration(
                             border: Border(top: BorderSide(width: 1)),
                             shape: BoxShape.circle,
                           ),
@@ -329,61 +329,59 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                      const  SizedBox(
                           width: 10,
                         ),
-                        Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                lstLuuTru[i].ten_Diem.toString(),
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                              Text(
-                                lstLuuTru[i].mo_Ta.toString().substring(0, 20),
-                                style: TextStyle(fontSize: 18),
-                                softWrap: true,
-                              ),
-                              Row(
-                                children: [
-                                  Icon(Icons.location_on, color: Colors.green),
-                                  Text(
-                                    'Liên hệ: ' + lstLuuTru[i].sdt.toString(),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.fade,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                    ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              lstLuuTru[i].ten_Diem.toString(),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 20),
+                            ),
+                            Text(
+                              lstLuuTru[i].mo_Ta.toString().substring(0, 20),
+                              style: const TextStyle(fontSize: 18),
+                              softWrap: true,
+                            ),
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on, color: Colors.green),
+                                Text(
+                                  'Liên hệ: ' + lstLuuTru[i].sdt.toString(),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.fade,
+                                  style:const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
                                   ),
-                                ],
-                              )
-                            ],
-                          ),
+                                ),
+                              ],
+                            )
+                          ],
                         )
                       ],
                     ),
                   ),
                 ),
               ),
-              SizedBox(
+            const  SizedBox(
                 height: 20,
               ),
               //Hiển thị các bài viết về địa danh này
-              Text(
+            const  Text(
                 "Bài viết liên quan",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 24,
                 ),
               ),
-              SizedBox(
+            const  SizedBox(
                 height: 20,
               ),
-              Container(
+              SizedBox(
                 height: MediaQuery.of(context).size.height * 0.24,
                 child: ListView.builder(
                   shrinkWrap: true,
@@ -394,7 +392,7 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
                       Navigator.pop(context);
                     },
                     child: Container(
-                      margin: EdgeInsets.all(5),
+                      margin:const EdgeInsets.all(5),
                       width: MediaQuery.of(context).size.width * 0.36,
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -414,11 +412,11 @@ class TrangChiTietDiaDanhState extends State<TrangChiTietDiaDanh> {
                               Colors.black.withOpacity(0.9)
                             ],
                             begin: Alignment.topCenter,
-                            stops: [0.5, 1],
+                            stops:const [0.5, 1],
                             end: Alignment.bottomCenter,
                           ),
                         ),
-                        padding: EdgeInsets.all(10),
+                        padding:const EdgeInsets.all(10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

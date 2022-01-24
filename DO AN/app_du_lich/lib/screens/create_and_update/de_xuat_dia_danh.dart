@@ -1,6 +1,7 @@
 // Đây là trang đề xuất
+// ignore_for_file: prefer_const_constructors
+
 import 'package:app_du_lich/objects/api_response.dart';
-import 'package:app_du_lich/objects/de_xuat_obect.dart';
 import 'package:app_du_lich/provider/de_xuat_provider.dart';
 import 'package:app_du_lich/provider/loai_dia_danh_provider.dart';
 import 'package:app_du_lich/provider/user_provider.dart';
@@ -8,9 +9,9 @@ import 'package:app_du_lich/screens/dang_nhap_dang_ky/login.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // Thư viện hỗ trọ up ảnh vô yam copy ra
 import 'dart:io';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart'; // Location hien tai
 
-import '../../constant.dart'; // Location hien tai
+import '../../constant.dart'; 
 
 class DeXuatDiaDanh extends StatefulWidget {
   const DeXuatDiaDanh({Key? key}) : super(key: key);
@@ -25,6 +26,7 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
   File? _imageFile;
   final _picker = ImagePicker();
   bool _loading = true;
+  bool _check = false; // Man create 15/01 | Nếu người ta chưa Tìm kiếm sẽ không hiện location - khi tìm nó là true
   List<dynamic> _lstItems = []; // Chứa danh sách item lấy về
   String? value; // Gía trị drop button
   String viDoData = "";
@@ -33,7 +35,9 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
   final TextEditingController _txtTenDiaDanh = TextEditingController();
   final TextEditingController _txtTenGoiKhac = TextEditingController();
   final TextEditingController _txtNoiDung = TextEditingController();
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>(); // Khởi tạo KHÓA CHUNG để bắt được thay đổi trong Form
 
+// 23/01/2022 : Man update _taoDeXuat 12:00:10
   void _taoDeXuat(String idLoai, String tenDiem, String tenGoiKhac, String moTa,
       String kinhDo, String viDo) async {
     // Do không thể lưu ảnh bình thường nên phải convert nó sang mã base64
@@ -41,14 +45,15 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
         ? null
         : getStringImage(_imageFile); // Nếu có ảnh sẽ encode sang mã base 64
     ApiResponse response = await taoDeXuat(
-        idLoai, tenDiem, tenGoiKhac, moTa, kinhDo, viDo, image!);
+        idLoai, tenDiem, tenGoiKhac, moTa, kinhDo, viDo, image);
 
-    if (response.error == null) {
-      Navigator.of(context).pop();
+    if (response.error == null) { 
+      const status = 'Cảm ơn vì đề xuất của bạn.';
+      Navigator.of(context).pop( status);
     } else if (response.error == unauthorized) {
       logout().then((value) => {
             Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => const LoginPage()),
                 (route) => false)
           });
     } else {
@@ -58,7 +63,7 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
         _loading = !_loading;
       });
     }
-  }
+  } // end update
 
   getCurrentPosition() async {
     Position position = await Geolocator.getCurrentPosition(
@@ -72,7 +77,7 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
 
   List<String> menuItems = <String>[
     // Item của drop button
-    'Loai',
+    '',
   ];
 
   DropdownMenuItem<String> _buildItem(String item) => DropdownMenuItem(
@@ -117,26 +122,36 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Đề xuất địa danh',
-                style: TextStyle(color: Colors.white),
-              ),
-              IconButton(
-                  onPressed: () {
-                    // idLoai,tenDem,tenGoiKhac,moTa,kinhDo,viDo,image!
-                    print(_txtTenDiaDanh.text);
-                    print(kinhDoData);
-                    print(idLoai);
-                    _taoDeXuat(idLoai, _txtTenDiaDanh.text, _txtTenGoiKhac.text,
-                        _txtNoiDung.text, kinhDoData, viDoData);
-                  },
-                  icon: const Icon(Icons.send))
-            ],
+          title: Form(
+            key: _formkey,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Đề xuất địa danh',
+                  style: TextStyle(color: Colors.white),
+                ),
+                IconButton(
+                    onPressed: () {
+                      // idLoai,tenDem,tenGoiKhac,moTa,kinhDo,viDo,image!
+                      // print(_txtTenDiaDanh.text);
+                      // print(kinhDoData);
+                      // print(idLoai);
+                       if (_formkey.currentState!.validate()) {
+                                   _taoDeXuat(idLoai, _txtTenDiaDanh.text, _txtTenGoiKhac.text,
+                          _txtNoiDung.text, kinhDoData, viDoData);
+                                  print("Validated");
+                            }else{
+                                  // ignore: avoid_print
+                                  print("Not Validated");
+                             }
+                    },
+                    icon: const Icon(Icons.send))
+              ],
+            ),
           ),
         ),
         body: ListView(
@@ -145,8 +160,19 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: TextField(
+                  child: TextFormField(
                     controller: _txtTenDiaDanh,
+                    validator: (value) {
+                      if(value!.isEmpty)
+                      {
+                        return "Vui lòng nhập tên địa danh";
+                      }
+                      if(value.length <3)
+                      {
+                        return "Tên địa danh lớn hơn 3 ký tự";
+                      }
+                      return null;
+                    },
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5)),
@@ -156,7 +182,7 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: TextField(
+                  child: TextFormField(
                     controller: _txtTenGoiKhac,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -194,8 +220,19 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
                 //=3=
                 Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: TextField(
+                  child: TextFormField(
                     controller: _txtNoiDung,
+                    validator: (value) {
+                      if(value!.isEmpty)
+                      {
+                        return "Vui lòng nhập mô tả";
+                      }
+                      if(value.length <11)
+                      {
+                        return "Mô tả phải lớn hơn 10 ký tự";
+                      }
+                      return null;
+                    },
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5)),
@@ -206,9 +243,10 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
                 //=4=
                 Padding(
                     padding: const EdgeInsets.all(12.0),
-                    child: TextButton(
+                    child: _check ? const SizedBox(height: 1,) :TextButton( // Khi chưa chọn vị trí thì hiện cái cho ta chọn
                         onPressed: () {
                           getCurrentPosition();
+                          _check = !_check; 
                           //  print(kinhDoData);
                           //  print(viDoData);
                         },
@@ -218,41 +256,43 @@ class DeXuatDiaDanhState extends State<DeXuatDiaDanh> {
                         ]))),
 
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: _check ? Align(
                     alignment: Alignment.centerLeft,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('▶Kinh độ  ' + kinhDoData),
-                        Text('▶Vĩ độ  ' + viDoData),
+                        Text('▶ Kinh độ: ' + kinhDoData, style:const TextStyle(fontSize: 16),),
+                        Text('▶ Vĩ độ: ' + viDoData, style:const TextStyle(fontSize: 16),),
                       ],
                     ),
-                  ),
+                  ) : const SizedBox(height: 1,)
                 ),
 
                 // =5=
                 Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.only(left: 8.0),
                     child: ButtonBar(
+                      alignment: MainAxisAlignment.start,
                       children: <Widget>[
                         IconButton(
-                          icon: const Icon(Icons.photo_camera),
+                          icon: const Icon(Icons.photo_camera, color: Colors.blue,),
                           onPressed: () async => _pickImageFromCamera(),
                           tooltip: 'Shoot picture',
                         ),
                         IconButton(
-                          icon: const Icon(Icons.photo),
+                          icon: const Icon(Icons.photo, color: Colors.blue,),
                           onPressed: () async => _pickImageFromGallery(),
                           tooltip: 'Pick from gallery',
                         ),
                       ],
                     )),
                 if (_imageFile == null)
-                  const Placeholder()
+                const  SizedBox(height: 2,) // const Placeholder()
                 else
-                  Image.file(_imageFile!),
-              ],
+                
+                  Image.file(_imageFile!)
+              ]
             ),
           ],
         ));

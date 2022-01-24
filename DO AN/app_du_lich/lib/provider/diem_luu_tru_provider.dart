@@ -3,8 +3,7 @@ import 'package:app_du_lich/objects/api_response.dart';
 import 'package:app_du_lich/objects/diem_luu_tru_object.dart';
 import 'package:app_du_lich/provider/user_provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:app_du_lich/objects/dia_danh_object.dart';
-import 'dart:convert';
+ import 'dart:convert';
 
 Future<ApiResponse> getDiemLuuTru(int id) async {
   ApiResponse apiResponse = ApiResponse();

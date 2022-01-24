@@ -9,6 +9,8 @@ import 'home_screen.dart';
 import 'login.dart';
 
 class SingupPage extends StatefulWidget {
+  const SingupPage({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return SingupState();
@@ -22,6 +24,8 @@ class SingupState extends State<SingupPage> {
   TextEditingController pass = TextEditingController();
   TextEditingController sdt = TextEditingController();
   bool loading = false;
+  bool showPassword = true; // Man create 15/10/2022 | pass moi 
+  bool showconfirmPassword = true; //Man create 15/10/2022 | pass xac nhan
 
   void register() async {
     ApiResponse response =
@@ -59,14 +63,14 @@ class SingupState extends State<SingupPage> {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ManHinhChinh()));
           },
-          icon: Icon(
+          icon:const Icon(
             Icons.arrow_back_ios,
             size: 20,
             color: Colors.black,
           ),
         ),
       ),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: double.infinity,
         child: Column(
@@ -77,7 +81,7 @@ class SingupState extends State<SingupPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text("Đăng Ký Tài Khoản Mới",
+               const   Text("Đăng Ký Tài Khoản Mới",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 30,
@@ -88,14 +92,14 @@ class SingupState extends State<SingupPage> {
                         height: MediaQuery.of(context).size.height / 100,
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding:const EdgeInsets.all(10),
                           child: TextFormField(
                             controller: name,
                             validator: (val) =>
                                 val!.isEmpty ? 'Chưa nhập họ tên' : null,
-                            decoration: InputDecoration(
+                            decoration:const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Họ và tên',
                             ),
@@ -103,15 +107,15 @@ class SingupState extends State<SingupPage> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
+                        padding:const EdgeInsets.symmetric(horizontal: 40),
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding:const EdgeInsets.all(10),
                           child: TextFormField(
                             controller: email,
                             validator: (val) =>
                                 val!.isEmpty ? 'Chưa nhập email' : null,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
+                            decoration:const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Email',
                             ),
@@ -119,15 +123,15 @@ class SingupState extends State<SingupPage> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
+                        padding:const EdgeInsets.symmetric(horizontal: 40),
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding:const EdgeInsets.all(10),
                           child: TextFormField(
                             validator: (val) =>
                                 val!.isEmpty ? 'Chưa nhập sô điện thoại' : null,
                             controller: sdt,
                             keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
+                            decoration:const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Số điện thoại',
                             ),
@@ -135,36 +139,56 @@ class SingupState extends State<SingupPage> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
+                        padding:const EdgeInsets.symmetric(horizontal: 40),
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding:const EdgeInsets.all(10),
                           child: TextFormField(
                             controller: pass,
+                            obscureText: showPassword,
                             validator: (val) => val!.length < 6
                                 ? 'Mật khẩu tối thiểu 6 ký tự'
                                 : null,
                             keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                               labelText: 'Mật khẩu',
+                              suffixIcon: IconButton(
+                                onPressed: (){
+                                  setState(() {
+                                     showPassword = !showPassword;
+                                  });
+                                }, 
+                                icon: Icon( showPassword ?
+                                  Icons.visibility_off : Icons.remove_red_eye ,
+                            color: showPassword ? Colors.blue : Colors.grey, 
+                                ))
                             ),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
+                        padding:const EdgeInsets.symmetric(horizontal: 40),
                         child: Container(
-                          padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                          padding:const EdgeInsets.fromLTRB(10, 10, 10, 0),
                           child: TextFormField(
                             keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
+                            obscureText: showconfirmPassword,
                             validator: (val) => val != pass.text
                                 ? 'Mật khẩu xác nhận không đúng'
                                 : null,
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(),
+                              border:const OutlineInputBorder(),
                               labelText: 'Nhập lại mật khẩu',
+                              suffixIcon: IconButton(
+                                onPressed: (){
+                                  setState(() {
+                                     showconfirmPassword = !showconfirmPassword;
+                                  });
+                                }, 
+                                icon: Icon( showconfirmPassword ?
+                                  Icons.visibility_off : Icons.remove_red_eye ,
+                            color: showconfirmPassword ? Colors.blue : Colors.grey, 
+                                ))
                             ),
                           ),
                         ),
@@ -172,15 +196,15 @@ class SingupState extends State<SingupPage> {
                     ],
                   ),
                   loading
-                      ? Center(
+                      ?const Center(
                           child: CircularProgressIndicator(),
                         )
                       : Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
+                          padding:const EdgeInsets.symmetric(horizontal: 40),
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(50),
-                                border: Border(
+                                border:const Border(
                                   bottom: BorderSide(color: Colors.black),
                                   top: BorderSide(color: Colors.black),
                                   left: BorderSide(color: Colors.black),
@@ -197,11 +221,11 @@ class SingupState extends State<SingupPage> {
                                   register();
                                 }
                               },
-                              color: Color(0xff0095f0),
+                              color:const Color(0xff0095f0),
                               shape: RoundedRectangleBorder(
-                                  side: BorderSide(color: Colors.black),
+                                  side:const BorderSide(color: Colors.black),
                                   borderRadius: BorderRadius.circular(50)),
-                              child: Text(
+                              child:const Text(
                                 "Đăng Ký",
                                 style: TextStyle(
                                     color: Colors.white,
@@ -217,14 +241,14 @@ class SingupState extends State<SingupPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text("Đã có tài khoản?"),
+              const   Text("Đã có tài khoản?"),
                 FlatButton(
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => LoginPage()),
                         (route) => false);
                   },
-                  child: Text("Đăng Nhập Ngay!",
+                  child:const Text("Đăng Nhập Ngay!",
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 )

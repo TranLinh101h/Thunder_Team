@@ -18,7 +18,7 @@ class DiaDanhController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function dsdiadanh()
+    public function index()
     {
         return response([
             'diadanhs'=>DiaDanh::where('status','=', '1')->orderby('created_at', 'desc')->withCount('baiviets')
@@ -30,8 +30,7 @@ class DiaDanhController extends Controller
         return response([
             'hinhdiadanh' =>HinhDiaDiem::get()],200);
     }
-
-        public function getNameDiaDanh() // Man create-07/01/2022 : 20:10:57 | Dùng để lấy ds đổ trong phần Địa của tạo bài viết
+    public function getNameDiaDanh() // Man create-07/01/2022 : 20:10:57 | Dùng để lấy ds đổ trong phần Địa của tạo bài viết
     {
         return response([
             'namediadanhs'=>DiaDanh::all('id','ten_dia_danh')
@@ -42,14 +41,6 @@ class DiaDanhController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
-     public function index()//TranLinh
-    {
-        $lstDiaDanh= DiaDanh::withCount('baiviets')->with('phanvung:ten_vung')->with('mien:ten_Mien')->with('loaidiadanh:ten_Loai')->get();//->get();
-        echo var_dump($lstDiaDanh);
-        //return view('dia_danh', ['lstDiaDanh' => $lstDiaDanh]);
-    }
-
     public function create()
     {
         //

@@ -12,6 +12,7 @@ use App\Models\DiaDanh;
 use App\Models\Like;
 use App\Models\Dislike;
 use App\Models\View;
+use App\Models\HinhBaiViet;
 
 class BaiVietController extends Controller
 {
@@ -24,7 +25,22 @@ class BaiVietController extends Controller
     {
         //Tran Linh Update 12/1/2022
         return response([
-            'baiviets'=>BaiViet::where('status', '=', '1')->orderby('created_at', 'desc')->with('user:name,id,img')
+            'baiviets'=>BaiViet::where('status', '=', '1')->orderby('created_at', 'desc')->with('user:name,id,img')->with('hinhbaiviet')
+            ->withCount('views', 'likes', 'dislikes')->with('likes', function($like){
+                return $like->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
+            })->with('dislikes', function($dislike){
+                return $dislike->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
+            })->get()],200);
+    }
+
+     public function baivietuser(Request $request)
+    {
+         $attrs= $request->validate([
+            'user_id'=> 'required',
+        ]);
+
+        return response([
+            'baiviets'=>BaiViet::where('user_id', $attrs['user_id'])->orderby('created_at', 'desc')->with('user:name,id,img')->with('hinhbaiviet')
             ->withCount('views', 'likes', 'dislikes')->with('likes', function($like){
                 return $like->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
             })->with('dislikes', function($dislike){

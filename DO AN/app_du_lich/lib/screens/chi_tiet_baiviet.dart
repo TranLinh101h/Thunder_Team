@@ -1,15 +1,16 @@
 import 'package:app_du_lich/objects/api_response.dart';
 import 'package:app_du_lich/objects/bai_viet_object.dart';
-import 'package:app_du_lich/provider/bai_viet_provider.dart';
+
 import 'package:app_du_lich/screens/trang_ca_nhan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 
 class TrangChiTietBaiViet extends StatefulWidget {
   final dynamic baiviet;
-  TrangChiTietBaiViet({Key? key, required this.baiviet}) : super(key: key);
+  const TrangChiTietBaiViet({Key? key, required this.baiviet}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
+    // ignore: no_logic_in_create_state
     return TrangChiTietBaiVietState(baiviet: baiviet);
   }
 }
@@ -27,7 +28,9 @@ class TrangChiTietBaiVietState extends State<TrangChiTietBaiViet> {
   ];
 
   @override
-  void initState() {}
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

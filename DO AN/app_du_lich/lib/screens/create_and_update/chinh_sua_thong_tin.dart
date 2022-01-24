@@ -18,14 +18,15 @@ class ChinhSuaThongTin extends StatefulWidget {
 }
 
 class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
-  TextEditingController _txtName = TextEditingController();
-  TextEditingController _txtGioiTinh = TextEditingController();
-  TextEditingController _txtEmail = TextEditingController();
-  TextEditingController _txtSdt = TextEditingController();
+  TextEditingController txtName = TextEditingController();
+  TextEditingController txtEmail = TextEditingController();
+  TextEditingController txtSdt = TextEditingController();
   User? user;
   bool _loading = true;
   File? _imageFile;
   final _picker = ImagePicker();
+  bool _switchEmail = true;
+  bool _switchSdt = true;
 
   Future<void> _pickImageFromGallery() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -34,17 +35,6 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
     }
   }
 
-  late String _status = "hoạt động";
-
-  static const menuStatus = <String>['hoạt động', 'ẩn'];
-
-  // ignore: unused_field
-  final List<PopupMenuItem<String>> _popUpMenuItems = menuStatus
-      .map((String value) => PopupMenuItem<String>(
-            value: value,
-            child: Text(value),
-          ))
-      .toList();
 
   void getInfo() async {
     ApiResponse response = await getUser();
@@ -52,10 +42,11 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
       setState(() {
         user = response.data as User;
         _loading = !_loading;
-        _txtName.text = user!.name ?? '';
-        _txtEmail.text = user!.email ?? '';
-        _txtSdt.text = user!.sdt ?? '';
-        _txtGioiTinh.text = user!.gioi_Tinh ?? '';
+        txtName.text = user!.name ?? '';
+        txtEmail.text = user!.email ?? '';
+        txtSdt.text = user!.sdt ?? '';
+        _switchEmail = user!.status_email == 1 ? true :false; 
+        _switchSdt = user!.status_sdt== 1 ? true :false; 
       });
     } else if (response.error == unauthorized) {
       logout().then((value) => {
@@ -75,6 +66,7 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
   @override
   void initState() {
     getInfo();
+
     super.initState();
   }
 
@@ -83,7 +75,7 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
         ? null
         : getStringImage(_imageFile); // Nếu có ảnh sẽ encode sang mã base 64
     ApiResponse response =
-        await updateUser(_txtName.text, _txtEmail.text, _txtSdt.text, image);
+        await updateUser(txtName.text, txtEmail.text, txtSdt.text, image);
 
     setState(() {
       _loading = !_loading;
@@ -110,46 +102,10 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
     }
   }
 
-  // ignore: unused_element, non_constant_identifier_names
-  Widget _ShowPersonalInformation(String txtName) {
-    return ListTile(
-      leading: const CircleAvatar(
-        backgroundImage:
-            AssetImage("images/fox.jpg"), // Khi có db từ web sẽ thay lại!
-      ),
-      title: Text(txtName,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          )),
-      subtitle: Row(
-        children: [
-          Icon(
-            Icons.trip_origin_outlined,
-            size: 15.0,
-            color: _status == "hoạt động" ? Colors.green : Colors.red,
-          ),
-          Text(
-            _status == "hoạt động" ? '  đang hoạt động' : '  Ẩn',
-            style: TextStyle(
-              color: _status == "hoạt động" ? Colors.green : Colors.red,
-            ),
-          )
-        ],
-      ),
-      trailing: PopupMenuButton<String>(
-        onSelected: (String newValue) {
-          _status = newValue;
-          setState(() {});
-        },
-        itemBuilder: (BuildContext context) => _popUpMenuItems,
-      ),
-    );
-  }
-
   Widget _buildProfile() {
     return GestureDetector(
         child: Container(
-          margin: EdgeInsets.only(left: 95, right: 95),
+          margin:const EdgeInsets.only(left: 101, right: 101),
           width: 50,
           height: 110,
           decoration: BoxDecoration(
@@ -170,16 +126,53 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
         });
   }
 
+  Widget buildSwitchEmail(String stEmail, bool _value) {
+    return Switch(
+             onChanged: (bool value) {
+               setState(() {
+                 if(_value == false )
+                 {
+                   stEmail = '1';
+                 }
+                 _value =!_value;
+                  _hidenEmail(stEmail);
+               });
+             },
+              value: _value ,
+             );
+  }
+
+  Widget buildSwitchSdt( String stSdt, bool _value) {
+    return Switch(
+             onChanged: (bool value) {
+               setState(() {
+                   if(_value == false )
+                 {
+                   stSdt = '1';
+                 }
+                 _value =!_value;
+                  hidenSDT(stSdt);
+               });
+             },
+              value: _value ,
+             );
+  }
+
   // ignore: non_constant_identifier_names
   Widget _BuildTextField(
-      String txtLabel, String txtName, TextEditingController controll) {
+      String txtLabel, String txtName, TextEditingController controll, Widget _switch) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          txtLabel,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15),
+        Row(
+          children: [
+            Text(
+              txtLabel,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15),
+            ),
+            _switch
+          ],
         ),
         TextField(
           controller: controll,
@@ -193,7 +186,68 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
     );
   }
 
-  Widget _ChangeInformation() {
+  void _hidenEmail(String stEmail) async {
+    ApiResponse response = await hidenEmail(stEmail);
+
+    setState(() {
+      _loading = !_loading;
+    });
+
+    if (response.error == null) {
+      setState(() {
+        _loading = !_loading;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('${response.data}'),
+      ));
+    } else if (response.error == unauthorized) {
+      logout().then((value) => {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LoginPage()),
+                (route) => false)
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+      setState(() {
+        _loading = !_loading;
+      });
+    }
+
+  } // Man create 15/01/2022 : 20:22:13
+
+  void _hidenSdt(String stSDT) async {
+    ApiResponse response = await hidenSDT(stSDT);
+
+    setState(() {
+      _loading = !_loading;
+    });
+
+    if (response.error == null) {
+      setState(() {
+        _loading = !_loading;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('${response.data}'),
+      ));
+    } else if (response.error == unauthorized) {
+      logout().then((value) => {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LoginPage()),
+                (route) => false)
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+      setState(() {
+        _loading = !_loading;
+      });
+    }
+
+  } // Man create 15/01/2022 : 20:22:13
+
+  // ignore: non_constant_identifier_names
+  Widget ChangeInformation() {
     return Container(
       decoration: BoxDecoration(
           border:
@@ -201,23 +255,21 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            child: Row(
-              children: const [
-                Icon(
-                  Icons.person,
-                  size: 28,
-                  color: Colors.blue,
-                ),
-                Text(
-                  ' Thông tin cá nhân',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 18),
-                ),
-              ],
-            ),
+          Row(
+            children: const [
+              Icon(
+                Icons.person,
+                size: 28,
+                color: Colors.blue,
+              ),
+              Text(
+                ' Thông tin cá nhân',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 18),
+              ),
+            ],
           ),
           TextButton(
               onPressed: () {
@@ -250,16 +302,60 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
                   padding: const EdgeInsets.all(10.0),
                   child: _buildProfile(),
                 ),
-                _ChangeInformation(),
+                ChangeInformation(),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
                     children: [
-                      _BuildTextField("Tên hiển thị", "Trần Linh", _txtName),
-                      _BuildTextField("Giới tính", "Nam", _txtGioiTinh),
-                      _BuildTextField(
-                          "Email", "thunderteam@gmail.com", _txtEmail),
-                      _BuildTextField("Số điện thoại", "0706050423", _txtSdt),
+                      _BuildTextField("Tên hiển thị", "", txtName,const SizedBox() ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                            const  Text(
+                                'Email',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15),
+                              ),
+                              buildSwitchEmail('0', _switchEmail)
+                            ],
+                          ),
+                          TextField(
+                            controller: txtEmail,
+                            decoration: InputDecoration(
+                                hintText: txtEmail.text, hintStyle: const TextStyle(fontSize: 18)),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          )
+                        ],
+                      ),
+                     Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                            const  Text(
+                                'SDT',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15),
+                              ),
+                              buildSwitchSdt('0', _switchSdt)
+                            ],
+                          ),
+                          TextField(
+                            controller: txtEmail,
+                            decoration: InputDecoration(
+                                hintText: txtSdt.text, hintStyle: const TextStyle(fontSize: 18)),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          )
+                        ],
+                      ),
+                      // _BuildTextField("Email", "thunderteam@gmail.com", _txtEmail, buildSwitchEmail('0', _switchEmail ) ),
+                      // _BuildTextField("Số điện thoại", "0706050423", _txtSdt, buildSwitchSdt('0', _switchSdt )),
                     ],
                   ),
                 ),

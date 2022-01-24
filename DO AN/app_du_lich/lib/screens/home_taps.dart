@@ -1,3 +1,6 @@
+import 'package:app_du_lich/objects/api_response.dart';
+import 'package:app_du_lich/objects/min_dia_danh_object.dart';
+import 'package:app_du_lich/objects/user_object.dart';
 import 'package:app_du_lich/provider/user_provider.dart';
 import 'package:app_du_lich/screens/create_and_update/de_xuat_dia_danh.dart';
 import 'package:app_du_lich/screens/create_and_update/tao_bai_viet.dart';
@@ -8,6 +11,7 @@ import 'package:app_du_lich/screens/trang_dia_danh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../constant.dart';
 import 'create_and_update/chinh_sua_thong_tin.dart';
 import 'create_and_update/doi_mat_khau.dart';
 import 'dang_nhap_dang_ky/login.dart';
@@ -23,17 +27,57 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+    late TabController _tabController;
+    Min_Dia_Danh selectDiaDanh = Min_Dia_Danh('1', 'home');  // Man create 15/01/2022 : 22:10:23
+    final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();  // Khoa chung // Man update 23/01/2022
+    User? user; // man update 23/01/2022
+    bool _loading = true;  // man update 23/01/2022
+
+
+void getInfo() async { // Man update 23/10/2022
+    ApiResponse response = await getUser();
+    if (response.error == null) {
+      setState(() {
+        user = response.data as User;
+        _loading = !_loading;
+      });
+    } else if (response.error == unauthorized) {
+      logout().then((value) => {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LoginPage()),
+                (route) => false)
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+      setState(() {
+        _loading = !_loading;
+      });
+    }
+  }
+
+// ignore: unused_element
+_showSnackBar(String content) { // Man update 23/01/2022
+  print('show');
+  final snackBar = SnackBar(
+    content: Text(content),
+    duration: const Duration(seconds : 3),
+    backgroundColor: Colors.green ,
+    );
+  // ignore: deprecated_member_use
+  _scaffoldkey.currentState!.showSnackBar(snackBar);
+} 
+
   @override
-  void initState() {
+  void initState() { // Man update
     super.initState();
+    getInfo();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(_handleTap);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _tabController.dispose();
     super.dispose();
   }
@@ -51,6 +95,7 @@ class HomePageState extends State<HomePage>
           length: 3,
           initialIndex: 0,
           child: Scaffold(
+            key: _scaffoldkey, // Man update 23/01/2022
               appBar: AppBar(
                 automaticallyImplyLeading: false,
                 backgroundColor: Colors.blue,
@@ -60,11 +105,13 @@ class HomePageState extends State<HomePage>
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => TrangCaNhan()));
                   },
-                  child: CircleAvatar(
+                  child: _loading ? const CircleAvatar(
                       backgroundImage: AssetImage(
                     //Avatar
                     "images/fox.jpg",
-                  )),
+                  )) : CircleAvatar(
+                    backgroundImage: NetworkImage(user!.img.toString()),
+                  )  ,
                 ),
                 centerTitle: true,
                 title: Row(
@@ -77,7 +124,7 @@ class HomePageState extends State<HomePage>
                           height: 30,
                           width: 30,
                         ),
-                        SizedBox(width: 3),
+                      const  SizedBox(width: 3),
                         const Text(
                           "TRAVEL APP",
                           style: TextStyle(
@@ -95,7 +142,7 @@ class HomePageState extends State<HomePage>
                               MaterialPageRoute(
                                   builder: (context) => TimKiem()));
                         },
-                        icon: Icon(Icons.search, color: Colors.white)),
+                        icon:const Icon(Icons.search, color: Colors.white)),
                   ],
                 ),
               ),
@@ -151,7 +198,7 @@ class HomePageState extends State<HomePage>
                         Icons.person,
                         color: Colors.green,
                       ),
-                      title: Text("Trang cá nhân"),
+                      title:const Text("Trang cá nhân"),
                       onTap: () {
                         Navigator.push(
                             context,
@@ -169,28 +216,28 @@ class HomePageState extends State<HomePage>
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ChinhSuaThongTin()));
+                                builder: (context) =>const ChinhSuaThongTin()));
                       },
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading:const Icon(
                         Icons.lock,
                         color: Colors.orange,
                       ),
-                      title: Text("Đổi mật khẩu"),
+                      title:const Text("Đổi mật khẩu"),
                       onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => DoiMatKhau()));
+                                builder: (context) =>const DoiMatKhau()));
                       },
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.logout,
                         color: Colors.red,
                       ),
-                      title: Text("Đăng xuất"),
+                      title:const Text("Đăng xuất"),
                       onTap: () {
                         logout().then((value) => {
                               Navigator.of(context).pushAndRemoveUntil(
@@ -211,19 +258,25 @@ class HomePageState extends State<HomePage>
                     CircularMenuItem(
                         icon: Icons.add,
                         onTap: () {
-                          Navigator.push(
+                        Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const TaoBaiViet()));
-                        }),
+                                  builder: (context) => TaoBaiViet(selectDiaDanh: selectDiaDanh )));
+                      }),
                     CircularMenuItem(
-                        icon: Icons.message,
-                        onTap: () {
-                          Navigator.push(
+                        icon: Icons.offline_share_rounded,
+                        onTap: () async{
+                        final result = await  Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const DeXuatDiaDanh()));
-                        }),
+                        if(result != null)
+                        {
+                          print(result);
+
+                          _showSnackBar(result);
+                        }
+                      }),
                   ]))),
     );
   }

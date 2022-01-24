@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Storage; // Man create
 use Illuminate\Support\Facades\URL; // Man create
 use Illuminate\Http\File;
 
-class Controller extends BaseController
+class Controller extends BaseController // 
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function saveImage($img, $path= 'public')
+    public function saveImage($img, $path= 'public') // Man update 13/01/2022 : 20:47:22 | Fix error img 
     {
         if(!$img)
         {
@@ -22,7 +22,7 @@ class Controller extends BaseController
         }
 
         $fileName =  time().'.png';
-        Storage::disk($path)->put($fileName, base64_decode(!$img) );
+        \Storage::disk($path)->put($fileName, base64_decode($img) );
 
         return URL::to('/').'/storage/'.$path.'/'.$fileName;
     }    // Man update 07/01/2022 function SaveIMG

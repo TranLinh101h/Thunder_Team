@@ -4,8 +4,8 @@ import 'package:app_du_lich/provider/hinh_dia_diem_provider.dart';
 import 'package:app_du_lich/screens/chi_tiet_dia_danh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 
 class TrangDiaDanh extends StatefulWidget {
   @override

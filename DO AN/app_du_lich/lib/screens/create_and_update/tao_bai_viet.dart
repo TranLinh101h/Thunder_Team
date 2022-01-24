@@ -1,6 +1,8 @@
 // Đây là màn hình tạo bài viết 
 import 'package:app_du_lich/constant.dart';
 import 'package:app_du_lich/objects/api_response.dart';
+import 'package:app_du_lich/objects/min_dia_danh_object.dart';
+import 'package:app_du_lich/objects/user_object.dart';
 import 'package:app_du_lich/provider/bai_viet_provider.dart';
 import 'package:app_du_lich/provider/user_provider.dart'; // Import vào để dùng phương thức getStringImage để encode img
 import 'package:app_du_lich/screens/create_and_update/chon_dia_danh.dart';
@@ -11,12 +13,15 @@ import 'package:image_picker/image_picker.dart'; // Thư viện hỗ trọ up �
 import 'dart:io'; // Cho phép sử dụng các phương thức hỗ trợ liên quan đến tệp
 
 
+
 class TaoBaiViet extends StatefulWidget{
-  const TaoBaiViet({Key? key}) : super(key: key);
+  final Min_Dia_Danh selectDiaDanh;
+  const TaoBaiViet({Key? key, required this.selectDiaDanh }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return TaoBaiVietState();
+    // ignore: no_logic_in_create_state
+    return TaoBaiVietState(selectDiaDanh: selectDiaDanh );
   }
 
 }
@@ -26,14 +31,17 @@ class TaoBaiVietState extends State<TaoBaiViet>{
   File? _imageFile;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Khởi tạo KHÓA CHUNG để bắt được thay đổi trong Form
   final TextEditingController _txtContent = TextEditingController();
-  bool _loading = false;
-  int _idDiaDanh = 0;// Biến chứa giá trị khi ta chọn địa danh bên screen khác
-  // ignore: non_constant_identifier_names
+  bool _loading = true;
+  // int _idDiaDanh = 0;// Biến chứa giá trị khi ta chọn địa danh bên screen khác
+  Min_Dia_Danh selectDiaDanh; // Man create 14/01/2022 | Biến chứa giá trị ta gửi qua
+  User? user;    // Man create 14/01/2022 
+  TaoBaiVietState({Key? key, required this.selectDiaDanh });
   
+
 void _taoBaiViet() async{
   // Do không thể lưu ảnh bình thường nên phải convert nó sang mã base64 
   String? image = _imageFile == null? null: getStringImage(_imageFile); // Nếu có ảnh sẽ encode sang mã base 64
-  ApiResponse response =  await taoBaiViet(_txtContent.text, _idDiaDanh);   // Giong nhu tra ve response.body
+  ApiResponse response =  await taoBaiViet(_txtContent.text, selectDiaDanh.id.toString() );   // Giong nhu tra ve response.body
 
   if(response.error == null) { // Neu tạo bài thành công 
     if(image!=null) // có ảnh
@@ -71,6 +79,33 @@ void _taoBaiViet() async{
   }
 }
 
+void getInfo() async {
+    ApiResponse response = await getUser();
+    if (response.error == null) {
+      setState(() {
+        user = response.data as User;
+        _loading = !_loading;
+      });
+    } else if (response.error == unauthorized) {
+      logout().then((value) => {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LoginPage()),
+                (route) => false)
+          });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+      setState(() {
+        _loading = !_loading;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    getInfo();
+    super.initState();
+  }
   // ignore: unused_element
   Widget _createButton(IconData icon, String txt) { // er - Tạo button ở dưới cùng
     return Container(
@@ -95,7 +130,9 @@ void _taoBaiViet() async{
 
                   if(result != null) {
                     setState(() {
-                      _idDiaDanh = result; // hứng cái bên kia trả về nếu có
+                      selectDiaDanh = result; // hứng cái bên kia trả về nếu có
+                      print(selectDiaDanh.id);
+                      print(selectDiaDanh.ten_dia_danh);
                     });
                   }
                    },
@@ -135,7 +172,7 @@ void _taoBaiViet() async{
           ],
         ),
       ),
-      body: _loading ?const Center(child: CircularProgressIndicator(),) : 
+      body: _loading ? const Center(child: CircularProgressIndicator(),) : 
       ListView( 
         children: [
           Column(
@@ -144,18 +181,30 @@ void _taoBaiViet() async{
             children: [
               Column(
           children: [
-              const Padding(
-              padding: EdgeInsets.all(8.0),
+               Padding(
+              padding:const EdgeInsets.all(8.0),
               child: ListTile(
-                leading: CircleAvatar(
-              //    backgroundImage: AssetImage('images/avatar01.jpg'),
-                 ),
+                leading: _loading == false ?  CircleAvatar(
+                  backgroundImage: NetworkImage(user!.img.toString() ) ,
+                )  : const CircleAvatar(),
                 title: Text(
-                  'Trương Vô Kỵ',
-                  style: TextStyle(
+                  _loading ? "" : user!.name.toString() ,
+                  style:const TextStyle(
                     fontWeight: FontWeight.bold
                   ),
                 ),
+                subtitle: Row(
+                  children: [
+                  const  Icon(Icons.place_outlined, size: 15, color: Colors.blueAccent ),
+                    Text(
+                 selectDiaDanh.ten_dia_danh != 'home' ? selectDiaDanh.ten_dia_danh : "",
+                 style: const TextStyle(
+                   fontSize: 12,
+                   color: Colors.blue
+                 ),
+              ),
+                  ],
+                )
                 ),
               ),
                // =0= Phần avatar
@@ -163,33 +212,43 @@ void _taoBaiViet() async{
                key: _formKey,
                child: Padding(
                        padding:const EdgeInsets.all(8.0),
-                       child: TextFormField(
+                       child: Container(
+                         decoration: BoxDecoration(
+                           border: Border.all(
+                             width: 0.5,
+                             color: Colors.grey.shade300
+                           )
+                         ),
+                         child: TextFormField(
                 controller: _txtContent,
                 keyboardType: TextInputType.multiline,
                 maxLines: 9,
-                validator: (val)=> val!.isEmpty?'Nhap gi di ban ey':null,
+                validator: (val)=> val!.isEmpty? 'vui Lòng không bỏ trống':null,
                 decoration:const InputDecoration(
                 border: InputBorder.none,
                 hintText: 'Chia sẻ cảm xúc của bạn'
                 ),
                ),
                        ),
+                       ),
              ),
              // =1= Phần textField
-          _createButton(Icons.location_on, 'Check in'),
+          selectDiaDanh.ten_dia_danh == 'home' ? _createButton(Icons.location_on, 'Check in') : const SizedBox(height: 8,),
             // =2= 
           Padding(
            padding:const EdgeInsets.all(12.0),
            child:  ButtonBar(
+            alignment: MainAxisAlignment.start,
             children: <Widget>[
               IconButton(
-                icon: const Icon(Icons.photo_camera),
-                onPressed: () async => _pickImageFromGallery(),
+                icon: const Icon(Icons.photo_camera, color: Colors.blue,),
+                onPressed: () async => _pickImageFromCamera(),
                 tooltip: 'Shoot picture',
               ),
               IconButton(
-                icon: const Icon(Icons.photo),
+                icon: const Icon(Icons.photo, color: Colors.blue,),
                 onPressed: () async => _pickImageFromGallery(),
+               // onPressed: (){print(selectDiaDanh.ten_dia_danh ); print(selectDiaDanh.id);},
                 tooltip: 'Pick from gallery',
             ),
           ],
@@ -218,6 +277,12 @@ Future<void> _pickImageFromGallery() async {
     }
   }
 
+ Future<void> _pickImageFromCamera() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() => _imageFile = File(pickedFile.path));
+    }
+  }
  
 
 }

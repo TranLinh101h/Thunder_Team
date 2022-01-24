@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Http\Controllers\Controller; // Man create
 
 class AuthController extends Controller
 {
@@ -21,7 +22,7 @@ class AuthController extends Controller
             'name'=> $attrs['name'],
             'sdt'=> $attrs['sdt'],
             'email' => $attrs['email'],
-            'password' => bcrypt($attrs['password'])//Ma hoa mat khau
+            'password' => bcrypt($attrs['password'])
         ]);
 
         //return
@@ -65,8 +66,7 @@ class AuthController extends Controller
             'user'=> auth()->user()
         ],200);
     } 
-
-     // update cho user
+    // update cho user
     public function update(Request $request) 
     {
         // $attrs = $request->validate([
@@ -82,7 +82,7 @@ class AuthController extends Controller
         ]);
 
         return response([
-            'message' => 'update user success',
+            'message' => 'Cap nhat thong tin thanh cong',
             'user' => auth()->user()
         ], 200);
     }
@@ -90,12 +90,37 @@ class AuthController extends Controller
     public function updatePass(Request $request) 
     {
         auth()->user()->update([
-            'password' => $request->password,
+            'password' =>  bcrypt($request->password),
         ]);
 
         return response([
-            'message' => 'update pass user success',
+            'message' => 'Cap nhat mat khau thanh cong',
             'user' => auth()->user()
         ], 200);
     }
+ 
+    public function hidenEmail(Request $request) // Man create 15/10/2022 : 20:15:10 | Ẩn thông tin cho user
+    {
+        auth()->user()->update([
+            'status_email' => $request->status_email,
+        ]);
+
+        return response([
+            'message' => 'Ẩn email thành công',
+            'user' => auth()->user()
+        ], 200);
+    }
+
+    public function hidenSDT(Request $request) // Man create 15/10/2022 : 20:15:10 | Ẩn thông tin cho user
+    {
+        auth()->user()->update([
+            'status_sdt' =>$request->status_sdt,
+        ]);
+
+        return response([
+            'message' => 'Ẩn email thành công',
+            'user' => auth()->user()
+        ], 200);
+    }
+
 }

@@ -16,17 +16,17 @@ class DoiMatKhau extends StatefulWidget{
 }
 
 class DoiMatKhauState extends State<DoiMatKhau>{
-
-  final TextEditingController _password = TextEditingController();
-  final TextEditingController _confirmpassword = TextEditingController();
-  final TextEditingController _mypassword = TextEditingController(); // Pass cu
+  final TextEditingController txtpassword = TextEditingController(); // pass hien tai
+  final TextEditingController txtconfirmpassword = TextEditingController();
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>(); // Khởi tạo KHÓA CHUNG để bắt được thay đổi trong Form
 
   final String _condition = "if(_password.text != _confirmpassword.text){ return 'Mật khẩu không trùng khớp'; }";
   User? user;
   bool _loading = true;
-  String _myPass = '';
+  String checkPass = '';
+  bool showPassword = true; // pass moi
+  bool showconfirmPassword = true; // pass xac nhan
 
   void getInfo() async {
     ApiResponse response = await getUser();
@@ -35,7 +35,7 @@ class DoiMatKhauState extends State<DoiMatKhau>{
       setState(() {
         user = response.data as User;
         _loading = !_loading;
-        _myPass = user!.password ?? '';
+        // checkPass = user!.password ?? '';
       });
     } 
     else if(response.error == unauthorized) {
@@ -61,7 +61,7 @@ class DoiMatKhauState extends State<DoiMatKhau>{
   }
 
   void _updatePass() async {
-    ApiResponse response = await updatePassUser(_password.text);
+    ApiResponse response = await updatePassUser(txtpassword.text);
 
     setState(() {
       _loading = !_loading;
@@ -73,6 +73,7 @@ class DoiMatKhauState extends State<DoiMatKhau>{
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('${response.data}'),
       ));
+       Navigator.of(context).pop();
     }
     else if (response.error == unauthorized ){
     logout().then((value)=>{
@@ -90,11 +91,10 @@ class DoiMatKhauState extends State<DoiMatKhau>{
   }
 
   // ignore: unused_element
-  Widget _buildPasswordTextFormField(String hintxt, String labeltxt, TextEditingController ctrPass, String con) {
-    bool show = false;
+  Widget _buildPasswordTextFormField(String hintxt, String labeltxt, TextEditingController ctrPass, String con, bool showPass) {
     return TextFormField(
       controller: ctrPass,
-      obscureText: !show, // Khi thuộc tính là true thì pass sẽ show
+      obscureText: showPass, // Khi thuộc tính là true thì pass sẽ show
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5.0)
@@ -106,11 +106,14 @@ class DoiMatKhauState extends State<DoiMatKhau>{
         prefixIcon: const Icon(Icons.security),
         suffixIcon: IconButton(
           onPressed: (){
-            setState(() => show = !show ); // Cập nhật lại trạng thái đăng nhập
+            setState(() {
+              showPass = !showPass;
+             
+            }); // Cập nhật lại trạng thái đăng nhập
           }, 
-          icon: Icon(
-            Icons.remove_red_eye,
-            color: show ? Colors.blue : Colors.grey, // Khi _showPassword là true màu là xanh và ngược lại
+          icon: Icon( showPass ?
+            Icons.visibility_off : Icons.remove_red_eye,
+            color: showPass ? Colors.blue : Colors.grey, // Khi _showPassword là true màu là xanh và ngược lại
           ), )
        ),
       validator: (value){ // Check dữ liệu người dùng nhập vào
@@ -120,7 +123,7 @@ class DoiMatKhauState extends State<DoiMatKhau>{
         if(value.length <=6){
           return "Mật khẩu tối thiếu 6 ký tự";
         }
-        _updatePass();
+        con;
         return null;
       },
 
@@ -157,18 +160,81 @@ class DoiMatKhauState extends State<DoiMatKhau>{
                     padding: EdgeInsets.all(8.0),
                     child: Text('Mật khẩu tối thiểu 8 ký tự'),
                     ),
+                 
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: _buildPasswordTextFormField("Nhập mật khẩu hiện tại","Mật khẩu hiện tại", _mypassword, ""),
+                    child: TextFormField(
+                      controller: txtpassword,
+                      obscureText: showPassword, // Khi thuộc tính là true thì pass sẽ show
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0)
+                        ),
+                        hintText: 'Nhập mật khẩu mới',         // hintStyle: TextSTyle()
+                        labelText: 'Mật khẩu mới',
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: const Icon(Icons.security),
+                        suffixIcon: IconButton(
+                          onPressed: (){
+                            setState(() {
+                              showPassword = !showPassword;
+                            }); // Cập nhật lại trạng thái đăng nhập
+                          }, 
+                          icon: Icon( showPassword ?
+                           Icons.visibility_off : Icons.remove_red_eye ,
+                            color: showPassword ? Colors.blue : Colors.grey, // Khi _showPassword là true màu là xanh và ngược lại
+                          ), )
+                      ),
+                      validator: (value){ // Check dữ liệu người dùng nhập vào
+                        if(value!.isEmpty){ 
+                          return "Nhập đầy đủ thông tin bạn êy";
+                        }
+                        if(value.length <=6){
+                          return "Mật khẩu tối thiếu 6 ký tự";
+                        }
+                        return null;
+                       },
+                      )
                     ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: _buildPasswordTextFormField("Nhập mật khẩu mới","Mật khẩu mới", _password, ""),
+                    child: TextFormField(
+                      controller: txtconfirmpassword,
+                      obscureText: showconfirmPassword, // Khi thuộc tính là true thì pass sẽ show
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0)
+                        ),
+                        hintText: 'Nhập xác nhận mật khẩu mới',         // hintStyle: TextSTyle()
+                        labelText: 'Xác nhận khẩu mới',
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: const Icon(Icons.security),
+                        suffixIcon: IconButton(
+                          onPressed: (){
+                            setState(() {
+                              showconfirmPassword = !showconfirmPassword;
+                            }); // Cập nhật lại trạng thái đăng nhập
+                          }, 
+                          icon: Icon( showconfirmPassword ?
+                           Icons.visibility_off : Icons.remove_red_eye ,
+                            color: showconfirmPassword ? Colors.blue : Colors.grey, // Khi _showPassword là true màu là xanh và ngược lại
+                          ), )
+                      ),
+                      validator: (value){ // Check dữ liệu người dùng nhập vào
+                        if(value!.isEmpty){ 
+                          return "Nhập đầy đủ thông tin";
+                        }
+                        if(value.length <=6){
+                          return "Mật khẩu tối thiếu 6 ký tự";
+                        }
+                        if(txtpassword.text != txtconfirmpassword.text){ return 'Mật khẩu không trùng khớp'; }
+                        return null;
+                       },
+                      )
                     ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: _buildPasswordTextFormField("Xác nhận mật khẩu mới","Xác nhận mật khẩu mới", _confirmpassword, _condition ),
-                    ),
+                 
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SizedBox(
@@ -184,16 +250,12 @@ class DoiMatKhauState extends State<DoiMatKhau>{
                         ),
                         onPressed: (){
                           if (_formkey.currentState!.validate()) {
-                                // ignore: avoid_print
+                                  _updatePass();
                                 print("Validated");
                           }else{
                                 // ignore: avoid_print
                                 print("Not Validated");
                            }
-                         
-                          
-                            _updatePass();
-                          
                         },
                         child:const Text(
                           'Hoàn thành',

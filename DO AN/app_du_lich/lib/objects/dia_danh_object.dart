@@ -1,3 +1,5 @@
+import 'package:app_du_lich/objects/hinh_diadiem_object.dart';
+
 class Dia_Danh {
   int? id;
   String? ten_dia_danh;
@@ -11,6 +13,7 @@ class Dia_Danh {
   int? phan_vung_id;
   int? hot;
   int? share_count;
+  Hinh_Dia_Diem? hinh;
 
   Dia_Danh(
       {this.id,
@@ -24,7 +27,8 @@ class Dia_Danh {
       this.kinh_Do,
       this.vi_Do,
       this.hot,
-      this.share_count});
+      this.share_count,
+      this.hinh});
 
   factory Dia_Danh.fromJson(Map<String, dynamic> r) {
     return Dia_Danh(
@@ -39,6 +43,7 @@ class Dia_Danh {
         kinh_Do: r['kinh_Do'],
         vi_Do: r['vi_Do'],
         hot: r['hot'],
-        share_count: r['baiviets_count']);
+        share_count: r['baiviets_count'],
+        hinh: Hinh_Dia_Diem(img: r['hinhdiadiem'][0]['img']));
   }
 }

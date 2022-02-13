@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DiaDanh;
+use Illuminate\Http\Request; 
 use App\Http\Requests\StoreDiaDanhRequest;
 use App\Http\Requests\UpdateDiaDanhRequest;
 use App\Models\LoaiDiaDanh;
@@ -18,17 +19,58 @@ class DiaDanhController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    //Lấy toàn bộ danh sách địa danh
     public function index()
     {
         return response([
-            'diadanhs'=>DiaDanh::where('status','=', '1')->orderby('created_at', 'desc')->withCount('baiviets')
+            'diadanhs'=>DiaDanh::where('status','=', '1')->orderby('created_at', 'desc')
+            ->withCount('baiviets')->with('hinhdiadiem')
             ->get(),
             'hinhdiadanh' =>HinhDiaDiem::get()],200);
     }
-    public function hinh()
+
+    //Lấy ds địa danh hot
+    public function getDiaDanhHot()
     {
         return response([
-            'hinhdiadanh' =>HinhDiaDiem::get()],200);
+            'diadanhs'=>DiaDanh::where('hot','=', '1')->orderby('created_at', 'desc')
+            ->withCount('baiviets')->with('hinhdiadiem')
+            ->get(),
+           ],200);
+    }
+    //Lấy 1 địa danh theo id
+    public function getDiaDanh(Request $request)
+    {
+        $attr= $request->validate(['dia_danh_id'=>'required']);
+        
+        return response([
+            'diadanhs'=>DiaDanh::where('id','=', $attr['dia_danh_id'])->withCount('baiviets')->with('hinhdiadiem')
+            ->get()],200);
+    }
+    //Lấy ds địa danh theo loại 5/2/20200
+    public function getDDTheoMien(Request $request)
+    {
+        $attr= $request->validate(['mien_id'=>'required']);
+        
+        return response([
+            'diadanhs'=>DiaDanh::where('mien_id','=', $attr['mien_id'])->withCount('baiviets')->with('hinhdiadiem')
+            ->get()],200);
+    }
+
+    //8/2/2022 Tran Linh
+    public function timKiem(Request $request)
+    {
+        $attr= $request->validate(['tenDiaDanh'=>'required']);
+        
+        return response([
+            'diadanhs'=>DiaDanh::where('ten_dia_danh','LIKE', "%{$attr['tenDiaDanh']}%")->withCount('baiviets')->with('hinhdiadiem')->with('loaidiadanh')
+            ->get()],200);
+    }
+    public function hinhdiadanh(Request $request)
+    {
+        $attr= $request->validate(['dia_danh_id'=>'required']);
+        return response([
+            'hinhdiadanh' =>HinhDiaDiem::where('dia_danh_id', $attr['dia_danh_id'])->get()],200);
     }
     public function getNameDiaDanh() // Man create-07/01/2022 : 20:10:57 | Dùng để lấy ds đổ trong phần Địa của tạo bài viết
     {
@@ -37,7 +79,7 @@ class DiaDanhController extends Controller
         ],200);
     }
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new resource.   
      *
      * @return \Illuminate\Http\Response
      */

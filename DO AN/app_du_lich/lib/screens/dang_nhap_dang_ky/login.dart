@@ -38,10 +38,11 @@ class LoginState extends State<LoginPage> {
     }
   }
 
-  void saveAndRedirectToHome(User user) async {
+  void saveAndRedirectToHome(User user) async { // Man update 24/01/2022 | line 45
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.setString('token', user.token ?? '');
     await pref.setInt('userId', user.id ?? 0);
+    await pref.setString('password', pass.text.isEmpty ? '' : pass.text.toString() ); // Do bổ sung sau này nên kiểm tra lõ ta còn lưu phiên đăng nhập của version trước thì pass nó cũng không văng lỗi
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
   }
@@ -113,7 +114,7 @@ class LoginState extends State<LoginPage> {
                               controller: pass,
                               obscureText: showPass,
                               decoration: InputDecoration(
-                                border: OutlineInputBorder(),
+                                border: const OutlineInputBorder(),
                                 labelText: 'Mật khẩu',
                                 suffixIcon: IconButton(
                                   onPressed: (){}, 

@@ -17,8 +17,7 @@ class BaiViet extends Model
 
     protected $fillable = [
         'user_id',
-        'dia_danh_id',
-        'noi_Dung',
+        'dia_danh_id','noi_Dung',
         'checked',
     ];
 
@@ -26,7 +25,7 @@ class BaiViet extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function diadanh(){
+    public function diadanhs(){
         return $this->belongsTo(DiaDanh::class);
     }
 

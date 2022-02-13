@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->timestamps();
             $table->string('name');
             $table->string('email');
-             $table->string('img')->nullable();
+            $table->string('img')->nullable()->default('images/avatarDefault.jpg');
             $table->string('password');
             $table->string('sdt')->nullable();
             $table->boolean('status_email')->default(1);

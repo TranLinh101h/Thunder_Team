@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app_du_lich/constant.dart';
 import 'package:app_du_lich/objects/api_response.dart';
 import 'package:app_du_lich/objects/user_object.dart';
+import 'package:app_du_lich/provider/processed.dart';
 import 'package:app_du_lich/provider/user_provider.dart';
 import 'package:app_du_lich/screens/dang_nhap_dang_ky/login.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class ChinhSuaThongTin extends StatefulWidget {
 }
 
 class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
+  // Man update 25/01/2022 update full nha
   TextEditingController txtName = TextEditingController();
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtSdt = TextEditingController();
@@ -25,8 +27,8 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
   bool _loading = true;
   File? _imageFile;
   final _picker = ImagePicker();
-  bool _switchEmail = true;
-  bool _switchSdt = true;
+  late bool _switchEmail; // up 1
+  late bool _switchSdt; // up 1
 
   Future<void> _pickImageFromGallery() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -34,7 +36,6 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
       setState(() => _imageFile = File(pickedFile.path));
     }
   }
-
 
   void getInfo() async {
     ApiResponse response = await getUser();
@@ -45,8 +46,8 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
         txtName.text = user!.name ?? '';
         txtEmail.text = user!.email ?? '';
         txtSdt.text = user!.sdt ?? '';
-        _switchEmail = user!.status_email == 1 ? true :false; 
-        _switchSdt = user!.status_sdt== 1 ? true :false; 
+        _switchEmail = user!.status_email == 1 ? true : false;
+        _switchSdt = user!.status_sdt == 1 ? true : false;
       });
     } else if (response.error == unauthorized) {
       logout().then((value) => {
@@ -66,7 +67,6 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
   @override
   void initState() {
     getInfo();
-
     super.initState();
   }
 
@@ -105,7 +105,7 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
   Widget _buildProfile() {
     return GestureDetector(
         child: Container(
-          margin:const EdgeInsets.only(left: 101, right: 101),
+          margin: const EdgeInsets.only(left: 101, right: 101),
           width: 50,
           height: 110,
           decoration: BoxDecoration(
@@ -113,7 +113,9 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
               image: _imageFile == null
                   ? user!.img != null
                       ? DecorationImage(
-                          image: NetworkImage('${user!.img}'),
+                          // ignore: unnecessary_string_interpolations
+                          image: NetworkImage(
+                              '${user!.img!.contains('storage') ? baseURL2 + linkImage(user!.img.toString()) : baseURL.substring(0, baseURL.length - 3) + user!.img.toString()}'),
                           fit: BoxFit.cover)
                       : null
                   : DecorationImage(
@@ -128,39 +130,37 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
 
   Widget buildSwitchEmail(String stEmail, bool _value) {
     return Switch(
-             onChanged: (bool value) {
-               setState(() {
-                 if(_value == false )
-                 {
-                   stEmail = '1';
-                 }
-                 _value =!_value;
-                  _hidenEmail(stEmail);
-               });
-             },
-              value: _value ,
-             );
+      onChanged: (bool value) {
+        setState(() {
+          if (_value == false) {
+            stEmail = '1';
+          }
+          _value = value;
+          _hidenEmail(stEmail);
+        });
+      },
+      value: _value,
+    );
   }
 
-  Widget buildSwitchSdt( String stSdt, bool _value) {
+  Widget buildSwitchSdt(String stSdt, bool _value) {
     return Switch(
-             onChanged: (bool value) {
-               setState(() {
-                   if(_value == false )
-                 {
-                   stSdt = '1';
-                 }
-                 _value =!_value;
-                  hidenSDT(stSdt);
-               });
-             },
-              value: _value ,
-             );
+      onChanged: (bool value) {
+        setState(() {
+          if (_value == false) {
+            stSdt = '1';
+          }
+          _value = value;
+          hidenSDT(stSdt);
+        });
+      },
+      value: _value,
+    );
   }
 
   // ignore: non_constant_identifier_names
-  Widget _BuildTextField(
-      String txtLabel, String txtName, TextEditingController controll, Widget _switch) {
+  Widget _BuildTextField(String txtLabel, String txtName,
+      TextEditingController controll, Widget _switch) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -169,7 +169,9 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
             Text(
               txtLabel,
               style: const TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: 15),
             ),
             _switch
           ],
@@ -187,6 +189,7 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
   }
 
   void _hidenEmail(String stEmail) async {
+    // update 25/01/2022
     ApiResponse response = await hidenEmail(stEmail);
 
     setState(() {
@@ -203,7 +206,7 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
     } else if (response.error == unauthorized) {
       logout().then((value) => {
             Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => const LoginPage()), //up
                 (route) => false)
           });
     } else {
@@ -213,10 +216,10 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
         _loading = !_loading;
       });
     }
-
   } // Man create 15/01/2022 : 20:22:13
 
-  void _hidenSdt(String stSDT) async {
+  void hidenSdt(String stSDT) async {
+    // update 25/01/2022
     ApiResponse response = await hidenSDT(stSDT);
 
     setState(() {
@@ -233,7 +236,7 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
     } else if (response.error == unauthorized) {
       logout().then((value) => {
             Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => const LoginPage()),
                 (route) => false)
           });
     } else {
@@ -243,7 +246,6 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
         _loading = !_loading;
       });
     }
-
   } // Man create 15/01/2022 : 20:22:13
 
   // ignore: non_constant_identifier_names
@@ -307,16 +309,19 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
                     children: [
-                      _BuildTextField("Tên hiển thị", "", txtName,const SizedBox() ),
+                      _BuildTextField(
+                          "Tên hiển thị", "", txtName, const SizedBox()),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                            const  Text(
+                              const Text(
                                 'Email',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    fontSize: 15),
                               ),
                               buildSwitchEmail('0', _switchEmail)
                             ],
@@ -324,22 +329,25 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
                           TextField(
                             controller: txtEmail,
                             decoration: InputDecoration(
-                                hintText: txtEmail.text, hintStyle: const TextStyle(fontSize: 18)),
+                                hintText: txtEmail.text,
+                                hintStyle: const TextStyle(fontSize: 18)),
                           ),
                           const SizedBox(
                             height: 10,
                           )
                         ],
                       ),
-                     Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                            const  Text(
+                              const Text(
                                 'SDT',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    fontSize: 15),
                               ),
                               buildSwitchSdt('0', _switchSdt)
                             ],
@@ -347,7 +355,8 @@ class ChinhSuaThongTinState extends State<ChinhSuaThongTin> {
                           TextField(
                             controller: txtEmail,
                             decoration: InputDecoration(
-                                hintText: txtSdt.text, hintStyle: const TextStyle(fontSize: 18)),
+                                hintText: txtSdt.text,
+                                hintStyle: const TextStyle(fontSize: 18)),
                           ),
                           const SizedBox(
                             height: 10,

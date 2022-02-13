@@ -45,8 +45,9 @@ class SingupState extends State<SingupPage> {
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.setString('token', user.token ?? '');
     await pref.setInt('userId', user.id ?? 0);
+        await pref.setString('password', pass.text.isEmpty ? '' : pass.text.toString() ); // Do bổ sung sau này nên kiểm tra lõ ta còn lưu phiên đăng nhập của version trước thì pass nó cũng không văng lỗi
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => HomePage()), (route) => false);
+        MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
   }
 
   @override
@@ -56,6 +57,7 @@ class SingupState extends State<SingupPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
+        // ignore: deprecated_member_use
         brightness: Brightness.light,
         backgroundColor: Colors.white,
         leading: IconButton(
@@ -242,10 +244,11 @@ class SingupState extends State<SingupPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
               const   Text("Đã có tài khoản?"),
+                // ignore: deprecated_member_use
                 FlatButton(
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(builder: (context) => const LoginPage()),
                         (route) => false);
                   },
                   child:const Text("Đăng Nhập Ngay!",

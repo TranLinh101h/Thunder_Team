@@ -67,7 +67,7 @@ class AuthController extends Controller
         ],200);
     } 
     // update cho user
-    public function update(Request $request) 
+    public function update(Request $request)  // Man update 25/01/2022
     {
         // $attrs = $request->validate([
         //     'name' => 'required|string'
@@ -82,43 +82,43 @@ class AuthController extends Controller
         ]);
 
         return response([
-            'message' => 'Cap nhat thong tin thanh cong',
+            'message' => 'Đã cập nhật thông tin cá nhân',
             'user' => auth()->user()
         ], 200);
     }
 
-    public function updatePass(Request $request) 
+    public function updatePass(Request $request) // Man update 25/01/2022
     {
         auth()->user()->update([
             'password' =>  bcrypt($request->password),
         ]);
 
         return response([
-            'message' => 'Cap nhat mat khau thanh cong',
+            'message' => 'Cập nhật mật khẩu thành công',
             'user' => auth()->user()
         ], 200);
     }
  
-    public function hidenEmail(Request $request) // Man create 15/10/2022 : 20:15:10 | Ẩn thông tin cho user
+    public function hidenEmail(Request $request) // Man update 25/01/2022
     {
         auth()->user()->update([
             'status_email' => $request->status_email,
         ]);
 
         return response([
-            'message' => 'Ẩn email thành công',
+            'message' => 'Cập nhật thành công',
             'user' => auth()->user()
         ], 200);
     }
 
-    public function hidenSDT(Request $request) // Man create 15/10/2022 : 20:15:10 | Ẩn thông tin cho user
+    public function hidenSDT(Request $request) // Man update 25/01/2022
     {
         auth()->user()->update([
             'status_sdt' =>$request->status_sdt,
         ]);
 
         return response([
-            'message' => 'Ẩn email thành công',
+            'message' => 'Cập nhật thành công',
             'user' => auth()->user()
         ], 200);
     }

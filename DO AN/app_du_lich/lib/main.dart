@@ -1,4 +1,5 @@
 import 'package:app_du_lich/screens/dang_nhap_dang_ky/loading.dart';
+import 'package:app_du_lich/screens/man_hinh_cho.dart';
 
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ void main() {
     debugShowCheckedModeBanner: false,
     initialRoute: 'welcome',
     routes: {
-      'welcome': (context) => Loading(),
+      'welcome': (context) => const ManHinhCho(),
     },
   ));
 }

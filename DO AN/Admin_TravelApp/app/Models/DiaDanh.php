@@ -8,6 +8,7 @@ use App\Models\LoaiDiaDanh;
 use App\Models\Mien;
 use App\Models\PhanVung;
 use App\Models\BaiViet;
+use App\Models\DanhGia;
 
 class DiaDanh extends Model
 {
@@ -43,6 +44,10 @@ class DiaDanh extends Model
 
     public function hinhdiadiem(){
         return $this->hasMany(HinhDiaDiem::class);
+    }
+
+    public function danhgias(){
+        return $this->hasMany(DanhGia::class);
     }
 
 }

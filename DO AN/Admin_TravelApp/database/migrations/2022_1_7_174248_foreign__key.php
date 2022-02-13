@@ -14,16 +14,7 @@ class ForeignKey extends Migration
     public function up()
     {
         //
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::table('dia_danhs', function (Blueprint $table) {
+         Schema::table('dia_danhs', function (Blueprint $table) {
             $table->foreign('loai_dia_danh_id')->references('id')->on('loai_dia_danhs');
         });
 
@@ -83,5 +74,15 @@ class ForeignKey extends Migration
         Schema::table('de_xuats', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users');
         });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+       
     }
 }

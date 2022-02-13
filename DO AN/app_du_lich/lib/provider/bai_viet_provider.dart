@@ -67,6 +67,68 @@ Future<ApiResponse> getAllBaiVietUser(int user_id) async {
   return apiResponse;
 }
 
+//7.2.2022 TranLinh
+Future<ApiResponse> getBaiViet(String id) async {
+  ApiResponse apiResponse = ApiResponse();
+
+  try {
+    String token = await getToken();
+    final response = await http.post(Uri.parse(getbaivietURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    }, body: {
+      'id': id
+    });
+    switch (response.statusCode) {
+      case 200:
+        apiResponse.data = jsonDecode(response.body)['baiviets']
+            .map((p) => Bai_Viet.fromJson(p))
+            .toList();
+        apiResponse.data as List<dynamic>;
+        break;
+      case 401:
+        final errors = unauthorized;
+        break;
+      default:
+        apiResponse.error = somethingWentWrong;
+        break;
+    }
+  } catch (e) {
+    apiResponse.error = 'ngoai le';
+  }
+  return apiResponse;
+}
+
+Future<ApiResponse> getBaiVietDiaDanh(String diaDanhId) async {
+  ApiResponse apiResponse = ApiResponse();
+
+  try {
+    String token = await getToken();
+    final response = await http.post(Uri.parse(baivietdiadanhURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    }, body: {
+      'dia_danh_id': diaDanhId
+    });
+    switch (response.statusCode) {
+      case 200:
+        apiResponse.data = jsonDecode(response.body)['baiviets']
+            .map((p) => Bai_Viet.fromJson(p))
+            .toList();
+        apiResponse.data as List<dynamic>;
+        break;
+      case 401:
+        final errors = unauthorized;
+        break;
+      default:
+        apiResponse.error = somethingWentWrong;
+        break;
+    }
+  } catch (e) {
+    apiResponse.error = 'ngoai le';
+  }
+  return apiResponse;
+}
 // // encoded image sang mã base64 để lưu trữ
 // String? getStringImage(File? file) {
 //   if(file == null) return null;
@@ -210,17 +272,18 @@ Future<ApiResponse> taoBaiViet(String body, String idDiaDanh) async {
   return apiResponse;
 }
 
-Future<ApiResponse> suaBaiViet(int idBaiViet, String body) async {
+//TranLinh: update 9/2/2022
+Future<ApiResponse> suaBaiViet(int idBaiViet, String noiDung) async {
   ApiResponse apiResponse = ApiResponse();
 
   try {
     String token = await getToken();
-    final response = await http
-        .put(Uri.parse('$baivietURL/$idBaiViet'), headers: {
+    final response = await http.put(Uri.parse(suabaivietURL), headers: {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     }, body: {
-      'noi_Dung': body
+      'id': idBaiViet,
+      'noi_Dung': noiDung
     }); // Nếu mà người ta không có nhu cầu up hình thì lấy phần nội dung thoy
     switch (response.statusCode) {
       case 200:
@@ -242,15 +305,18 @@ Future<ApiResponse> suaBaiViet(int idBaiViet, String body) async {
   return apiResponse;
 }
 
+//TranLinh: update 9/2/2022
 Future<ApiResponse> xoaBaiViet(int idBaiViet) async {
   ApiResponse apiResponse = ApiResponse();
 
   try {
     String token = await getToken();
-    final response = await http.delete(
-      Uri.parse('$baivietURL/$idBaiViet'),
-      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
-    ); // Nếu mà người ta không có nhu cầu up hình thì lấy phần nội dung thoy
+    final response = await http.delete(Uri.parse(xoabaivietURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    }, body: {
+      'id': idBaiViet.toString()
+    }); // Nếu mà người ta không có nhu cầu up hình thì lấy phần nội dung thoy
     switch (response.statusCode) {
       case 200:
         apiResponse.data = jsonDecode(response.body)['message'];

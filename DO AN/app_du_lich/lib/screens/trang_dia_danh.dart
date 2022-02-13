@@ -1,4 +1,5 @@
 import 'package:app_du_lich/objects/api_response.dart';
+import 'package:app_du_lich/objects/dia_danh_object.dart';
 import 'package:app_du_lich/provider/dia_danh_provider.dart';
 import 'package:app_du_lich/provider/hinh_dia_diem_provider.dart';
 import 'package:app_du_lich/screens/chi_tiet_dia_danh.dart';
@@ -63,106 +64,82 @@ Widget _DiaDanh(
               )
             ],
           ),
-        )
-        /*Row(
-        children: [
-          Container(
-              width: 200,
-              height: 90,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: Image.network(img), fit: BoxFit.cover),
-                  borderRadius: BorderRadius.circular(8.0))),
-          SizedBox(
-            width: 5,
-          ),
-          Expanded(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => TrangChiTietDiaDanh()));
-                },
-                child: Text(
-                  diadanh.ten_dia_danh,
-                  style: TextStyle(
-                      fontSize: 15, color: Colors.black, fontFamily: 'Sigmar'),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 5),
-                child: Text(
-                  diadanh.mo_Ta.substring(0, 40) + ' ...',
-                  maxLines: 2,
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Row(
-                children: [
-                  Icon(Icons.date_range),
-                  Text(
-                    diadanh.ngay_Tao == null ? '' : diadanh.ngay_Tao.toString(),
-                    style: TextStyle(fontSize: 12),
-                  )
-                ],
-              )
-            ],
-          ))
-        ],
-      ),*/
-        ),
+        )),
   );
 }
 
 class TrangDiaDanhState extends State<TrangDiaDanh>
     with SingleTickerProviderStateMixin {
-  List<dynamic> lstDiaDanh = [];
+  List<dynamic> lstDiaDanh1 = [];
+  List<dynamic> lstDiaDanh2 = [];
+  List<dynamic> lstDiaDanh3 = [];
+  List<dynamic> lstDiaDanhHot = [];
   List<dynamic> lstHinh = [];
   void load() async {
-    ApiResponse response = await getAllDiaDanh();
+    ApiResponse response = await getDiaDanhTheoMien('1');
     if (response.error == null) {
       if (response.data != null) {
-        setState(() {
-          lstDiaDanh = response.data! as List<dynamic>;
-        });
+        if (mounted)
+          setState(() {
+            lstDiaDanh1 = response.data! as List<dynamic>;
+          });
       }
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('${response.error}')));
     }
 
-    ApiResponse responseImg = await getAllHinhDiaDiem();
-    if (responseImg.error == null) {
-      if (responseImg.data != null) {
-        setState(() {
-          lstHinh = responseImg.data! as List<dynamic>;
-        });
+    ApiResponse response2 = await getDiaDanhTheoMien('2');
+    if (response2.error == null) {
+      if (response2.data != null) {
+        if (mounted)
+          setState(() {
+            lstDiaDanh2 = response2.data! as List<dynamic>;
+          });
       }
     } else {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('${responseImg.error}')));
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+    }
+
+    ApiResponse response3 = await getDiaDanhTheoMien('3');
+    if (response3.error == null) {
+      if (response3.data != null) {
+        if (mounted)
+          setState(() {
+            lstDiaDanh3 = response3.data! as List<dynamic>;
+          });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response.error}')));
+    }
+
+    ApiResponse response4 = await getDiaDanhHot();
+    if (response4.error == null) {
+      if (response4.data != null) {
+        if (mounted)
+          setState(() {
+            lstDiaDanhHot = response4.data! as List<dynamic>;
+          });
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('${response4.error}')));
     }
   }
 
   //Danh sách các loại địa danh
   List<Tab> _tapList = [
     Tab(
-      child: Text('Phượt',
+      child: Text('Miền Bắc',
           style: TextStyle(
               fontSize: 15,
               fontFamily: 'Josefin',
               fontWeight: FontWeight.bold)),
     ),
     Tab(
-      child: Text('Nghỉ dưỡng',
+      child: Text('Miền Trung',
           style: TextStyle(
               fontSize: 15,
               fontFamily: 'Josefin',
@@ -170,14 +147,7 @@ class TrangDiaDanhState extends State<TrangDiaDanh>
     ),
     Tab(
       child: Text(
-        'Dã ngoại',
-        style: TextStyle(
-            fontSize: 15, fontFamily: 'Josefin', fontWeight: FontWeight.bold),
-      ),
-    ),
-    Tab(
-      child: Text(
-        'Cắm trại',
+        'Miền Nam',
         style: TextStyle(
             fontSize: 15, fontFamily: 'Josefin', fontWeight: FontWeight.bold),
       ),
@@ -188,8 +158,8 @@ class TrangDiaDanhState extends State<TrangDiaDanh>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _tapList.length, vsync: this);
     load();
+    _tabController = TabController(length: _tapList.length, vsync: this);
   }
 
   @override
@@ -218,27 +188,21 @@ class TrangDiaDanhState extends State<TrangDiaDanh>
             Padding(
               padding: EdgeInsets.all(10.0),
               child: Container(
-                child: VungDiaDanh('assets/images/ms.png', lstDiaDanh),
+                child: VungDiaDanh('assets/images/ms.png', lstDiaDanh1),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Container(
-                child: VungDiaDanh('assets/images/mts1.png', lstDiaDanh),
+                child: VungDiaDanh('assets/images/mts1.png', lstDiaDanh2),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Container(
-                child: VungDiaDanh('assets/images/mts2.png', lstDiaDanh),
+                child: VungDiaDanh('assets/images/mts2.png', lstDiaDanh3),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Container(
-                child: VungDiaDanh('assets/images/mts3.png', lstDiaDanh),
-              ),
-            )
           ],
         ));
     ;
@@ -253,112 +217,129 @@ class TrangDiaDanhState extends State<TrangDiaDanh>
       'images/img3.jpg',
       'images/img4.jpg',
     ];
-    return NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              backgroundColor: Colors.grey[350],
-              expandedHeight: 200,
-              floating: false,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Stack(
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.24,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: 4,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) => GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => TrangChiTietDiaDanh(
-                                          diaDanh: null,
-                                        )));
-                          },
-                          child: Container(
-                            margin: EdgeInsets.all(5),
-                            width: MediaQuery.of(context).size.width * 0.36,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(lstImage[index]),
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Container(
-                              height: double.infinity,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.transparent,
-                                    Colors.black.withOpacity(0.9)
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  stops: [0.5, 1],
-                                  end: Alignment.bottomCenter,
-                                ),
-                              ),
-                              padding: EdgeInsets.all(10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Spacer(),
-                                  Text(
-                                    'Thung lũng tuyết',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.fade,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
+    return lstDiaDanh.length == 0
+        ? Center(
+            child: Text(
+              'ĐANG CẬP NHẬT...',
+              style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold),
+            ),
+          )
+        : NestedScrollView(
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                SliverAppBar(
+                  backgroundColor: Colors.grey[350],
+                  expandedHeight: 200,
+                  floating: false,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Stack(
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.24,
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: lstDiaDanhHot.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                Dia_Danh diaDanh = lstDiaDanhHot[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                TrangChiTietDiaDanh(
+                                                  diaDanh: diaDanh,
+                                                )));
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.all(5),
+                                    width: MediaQuery.of(context).size.width *
+                                        0.36,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(lstImage[index]),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                    softWrap: true,
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text("15 lượt chia sẻ",
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 15)),
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(3),
-                                      child: Text(
-                                        "HOT",
-                                        style: TextStyle(
-                                            color: Colors.red,
-                                            fontFamily: 'Sigmar'),
+                                    child: Container(
+                                      height: double.infinity,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Colors.transparent,
+                                            Colors.black.withOpacity(0.9)
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          stops: [0.5, 1],
+                                          end: Alignment.bottomCenter,
+                                        ),
+                                      ),
+                                      padding: EdgeInsets.all(10),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Spacer(),
+                                          Text(
+                                            diaDanh.ten_dia_danh.toString(),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.fade,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                            ),
+                                            softWrap: true,
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                              "${diaDanh.share_count} lượt chia sẻ",
+                                              style: TextStyle(
+                                                  color: Colors.white
+                                                      .withOpacity(0.5),
+                                                  fontSize: 15)),
+                                          Align(
+                                            alignment: Alignment.topRight,
+                                            child: Padding(
+                                              padding: EdgeInsets.all(3),
+                                              child: Text(
+                                                "HOT",
+                                                style: TextStyle(
+                                                    color: Colors.red,
+                                                    fontFamily: 'Sigmar'),
+                                              ),
+                                            ),
+                                          )
+                                        ],
                                       ),
                                     ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
+                                  ),
+                                );
+                              }),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                )
+              ];
+            },
+            body: Container(
+              child: ListView.builder(
+                itemCount: lstDiaDanh.length,
+                itemBuilder: (context, index) => _DiaDanh(context, image,
+                    lstDiaDanh[index], getHinh(lstDiaDanh[index].id)),
               ),
-            )
-          ];
-        },
-        body: Container(
-          child: ListView.builder(
-            itemCount: lstDiaDanh.length,
-            itemBuilder: (context, index) => _DiaDanh(context, image,
-                lstDiaDanh[index], getHinh(lstDiaDanh[index].id)),
-          ),
-        ));
+            ));
   }
 
   String getHinh(int diaDanhId) {

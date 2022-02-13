@@ -26,13 +26,15 @@ class BaiVietController extends Controller
         //Tran Linh Update 12/1/2022
         return response([
             'baiviets'=>BaiViet::where('status', '=', '1')->orderby('created_at', 'desc')->with('user:name,id,img')->with('hinhbaiviet')
+            //->with('diadanhs')
             ->withCount('views', 'likes', 'dislikes')->with('likes', function($like){
                 return $like->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
             })->with('dislikes', function($dislike){
                 return $dislike->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
             })->get()],200);
     }
-
+ 
+    //Lấy bài viết của 1 user
      public function baivietuser(Request $request)
     {
          $attrs= $request->validate([
@@ -41,6 +43,38 @@ class BaiVietController extends Controller
 
         return response([
             'baiviets'=>BaiViet::where('user_id', $attrs['user_id'])->orderby('created_at', 'desc')->with('user:name,id,img')->with('hinhbaiviet')
+            ->withCount('views', 'likes', 'dislikes')->with('likes', function($like){
+                return $like->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
+            })->with('dislikes', function($dislike){
+                return $dislike->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
+            })->get()],200);
+    }
+
+    //Lấy ds bài viết theo địa danh
+       public function baivietdiadanh(Request $request)
+    {
+         $attrs= $request->validate([
+            'dia_danh_id'=> 'required',
+        ]);
+
+        return response([
+            'baiviets'=>BaiViet::where('dia_danh_id', $attrs['dia_danh_id'])->orderby('created_at', 'desc')->with('user:name,id,img')->with('hinhbaiviet')
+            ->withCount('views', 'likes', 'dislikes')->with('likes', function($like){
+                return $like->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
+            })->with('dislikes', function($dislike){
+                return $dislike->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
+            })->get()],200);
+    }
+
+    //Lấy bài viết theo id
+      public function getbaiviet(Request $request)
+    {
+         $attrs= $request->validate([
+            'id'=> 'required',
+        ]);
+
+        return response([
+            'baiviets'=>BaiViet::where('id', $attrs['id'])->orderby('created_at', 'desc')->with('user:name,id,img')->with('hinhbaiviet')
             ->withCount('views', 'likes', 'dislikes')->with('likes', function($like){
                 return $like->where('user_id', auth()->user()->id)->select('id', 'user_id', 'bai_viet_id')->get();
             })->with('dislikes', function($dislike){
@@ -119,9 +153,14 @@ class BaiVietController extends Controller
      * @param  \App\Models\BaiViet  $baiViet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $baiViet = BaiViet::find($id);
+         $rq= $request->validate([
+            'id'=> 'required',
+            'noiDung'=> 'required|string'
+        ]);
+
+        $baiViet= BaiViet::where('id', $rq['id'])->first();
 
         if(!$baiViet)
         {
@@ -137,17 +176,12 @@ class BaiVietController extends Controller
             ], 403);
         }
 
-        $attrs = $request->validate([
-            'noi_Dung'=> 'required|string'
-        ]);
-
         $baiViet->update([
-            'noi_Dung'=> $attrs['noi_Dung']
+            'noi_Dung'=> $rq['noiDung']
         ]);
 
         return response([
-            'message' => 'Tao bai thanh cong',
-            'baiViet' => $baiViet
+            'message' => 'Sua thanh cong',
         ], 200);
     }
 
@@ -157,9 +191,13 @@ class BaiVietController extends Controller
      * @param  \App\Models\BaiViet  $baiViet
      * @return \Illuminate\Http\Response
      */
-    public function destroy(BaiViet $baiViet)
+    public function destroy(Request $request)
     {
-        $baiViet = BaiViet::find($id);
+        $rq= $request->validate([
+            'id'=> 'required'
+        ]);
+
+        $baiViet= BaiViet::where('id', $rq['id'])->first();
 
         if(!$baiViet)
         {
@@ -168,7 +206,7 @@ class BaiVietController extends Controller
             ], 403);
         }
 
-        if(!$baiViet->user_id != auth()->user()->id )
+        if($baiViet->user_id != auth()->user()->id )
         {
             return response([
                 'message' => 'Persision denied'
@@ -179,7 +217,6 @@ class BaiVietController extends Controller
 
         return response([
             'message' => 'Xoa bai viet',
-            'baiViet' => $baiViet
         ], 200);
     }
 }

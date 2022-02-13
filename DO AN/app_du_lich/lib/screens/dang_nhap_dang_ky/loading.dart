@@ -2,12 +2,14 @@ import 'package:app_du_lich/constant.dart';
 import 'package:app_du_lich/objects/api_response.dart';
 import 'package:app_du_lich/provider/user_provider.dart';
 import 'package:app_du_lich/screens/dang_nhap_dang_ky/home_screen.dart';
-import 'package:app_du_lich/screens/dang_nhap_dang_ky/login.dart';
+
 import 'package:app_du_lich/screens/home_taps.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Loading extends StatefulWidget {
+  const Loading({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return LoadingState();

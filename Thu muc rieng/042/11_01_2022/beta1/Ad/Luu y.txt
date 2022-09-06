@@ -1,2 +1,0 @@
-1. Chạy php artisan storage:link
-2. Tạo thư mục i hình

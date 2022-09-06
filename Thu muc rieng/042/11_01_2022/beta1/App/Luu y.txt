@@ -1,2 +1,0 @@
-1. Chạy file yam
-2. Bật quyền vị trí trên điện thoại trước khi dùng chức năng location trong mục đề xuất vì nó sẽ lấy vị trí hiện tại nên phải bật quyền vị trí !
